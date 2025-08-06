@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/manchego666/Tiendara/blob/master/docs/Logo.png" alt="Tiendara Logo" width="400"/>
+  <img src="https://github.com/manchego666/Tiendara/blob/master/Docs/Logo.png" alt="Tiendara Logo" width="400"/>
 </p>
 
 # Tiendara
