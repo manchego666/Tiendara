@@ -36,8 +36,8 @@ Las funciones clave se dividen en módulos:
 ---
 
 ## 🗂️ Clases actuales base
-
-```csharp
+---
+//csharp
 // Ejemplo de clases principales en CapaDatos
 class Producto { int ID; string Nombre; decimal Precio; int Stock; }
 class Venta { int ID; DateTime Fecha; List<Producto> ProductosVendidos; decimal Total; }
@@ -45,7 +45,7 @@ class Empleado { int ID; string Nombre; string Rol; decimal Sueldo; }
 class Proveedor { int ID; string Nombre; string Telefono; string ProductoSuministrado; }
 class Usuario { int ID; string Correo; string Tipo; string ClaveAcceso; }
 class CorteCaja { int ID; DateTime Fecha; decimal TotalVentas; decimal SaldoInicial; }
-
+---
 💾 Persistencia de datos
 Por ahora:
 Base de datos SQL Server local o SQLite.
@@ -56,14 +56,14 @@ Futuro:
 Sincronización remota o multiusuario.
 
 Posibilidad de usar Azure, Firebase o servidores propios.
-
+---
 📲 Plataforma objetivo
 Android como principal (soporte desde celulares gama media).
 
 PC compatible en modo depuración o escritorio extendido.
 
 Futuro: versión web para paneles administrativos (opcional).
-
+---
 🔐 Seguridad y acceso
 Control por tipo de usuario (Dueño, Empleado, Cliente)
 
@@ -72,7 +72,7 @@ Acceso VIP desbloquea ciertas pantallas.
 Control antispam en el sistema de chat.
 
 En versiones futuras: validación por huella, tokens VIP, y cifrado de base de datos.
-
+---
 🧠 Inteligencia y soporte
 Sistema modular para añadir IA en estadísticas o chat.
 
