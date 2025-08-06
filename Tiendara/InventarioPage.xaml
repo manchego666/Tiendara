@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Tiendara.InventarioPage"
+             Title="Inventario"
+             BackgroundColor="LightGreen">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10">
+
+            <Label Text="Inventario - Registro de productos"
+                   FontSize="20"
+                   HorizontalOptions="Center" />
+
+            <Entry x:Name="txtNombre" Placeholder="Nombre del producto" />
+            <Entry x:Name="txtMarca" Placeholder="Marca" />
+            <Entry x:Name="txtTipo" Placeholder="Tipo (comida, bebida...)" />
+            <Entry x:Name="txtCodigo" Placeholder="Código de barras" />
+            <Entry x:Name="txtProveedor" Placeholder="Proveedor" />
+            <Entry x:Name="txtPrecioCompra" Placeholder="Precio de compra" Keyboard="Numeric" />
+            <Entry x:Name="txtPrecioVenta" Placeholder="Precio de venta" Keyboard="Numeric" />
+            <Entry x:Name="txtStock" Placeholder="Stock (cantidad disponible)" Keyboard="Numeric" />
+            <Entry x:Name="txtUnidad" Placeholder="Unidad (pieza, litro...)" />
+            <Entry x:Name="txtContenido" Placeholder="Contenido neto (g, kg...)" />
+
+            <Button Text="Guardar producto" Clicked="OnGuardarClicked" />
+
+            <Label Text="Productos actuales:" FontAttributes="Bold" Margin="0,20,0,0" />
+
+            <CollectionView x:Name="listaProductos" HeightRequest="200">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <VerticalStackLayout Padding="5"
+                                             BackgroundColor="#DDDDDD"
+                                             Margin="0,0,0,10">
+                            <Label Text="{Binding Nombre}" FontAttributes="Bold" TextColor="Black" />
+                            <Label Text="{Binding Marca}" FontSize="12" TextColor="Black" />
+                            <Label Text="{Binding PrecioVenta, StringFormat='Precio: {0:C}'}" FontSize="12" TextColor="DarkGreen" />
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

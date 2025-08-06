@@ -18,13 +18,14 @@
                    TextColor="Black"/>
 
             <!-- BOTONES BÁSICOS -->
-            <Button Text="Inventario" />
-            <Button Text="Registrar venta" />
-            <Button Text="Corte de caja" />
-            <Button Text="Empleados" />
-            <Button Text="Proveedores" />
-            <Button Text="Cerrar sesión" />
+            <Button Text="Inventario" Clicked="OnInventarioClicked"/>
+            <Button Text="Registrar venta" Clicked="OnVentaClicked"/>
+            <Button Text="Corte de caja" Clicked="OnCorteCajaClicked"/>
+            <Button Text="Empleados" Clicked="OnEmpleadosClicked"/>
+            <Button Text="Proveedores" Clicked="OnProveedoresClicked"/>
+            <Button Text="Cerrar sesión" Clicked="OnCerrarSesionClicked"/>
 
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
+

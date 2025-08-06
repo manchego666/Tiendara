@@ -22,10 +22,19 @@ namespace Tiendara.CapaLogica
         public int ID { get; set; }
         public string Nombre { get; set; }
         public string Marca { get; set; }
-        public int Stock { get; set; }
-        public decimal Precio { get; set; }
-        public string Tipo { get; set; } // Bebida, Comida,Etc.
+        public int Stock { get; set; } // Cantidad actual
+        public decimal PrecioCompra { get; set; }
+        public decimal PrecioVenta { get; set; }
+        public string Tipo { get; set; } // Bebida, Comida, etc.
         public string CodigoDeBarras { get; set; }
         public string Proveedor { get; set; }
+        public DateTime FechaIngreso { get; set; }
+
+        // Nuevos campos
+        public string Unidad { get; set; } // pieza, litro, caja, etc.
+        public string ContenidoNeto { get; set; } // gramos, kg, etc.
+        public string ImagenRuta { get; set; } // Ruta local o base64 (futuro)
+        public decimal Precio { get; internal set; }
     }
+
 }

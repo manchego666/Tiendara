@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Shell
-    x:Class="Tiendara.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Tiendara"
-    Title="Tiendara">
+    x:Class="Tiendara.AppShell">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <!-- Rutas y navegación -->
+    <ShellContent Title="Inicio" ContentTemplate="{DataTemplate local:MainPage}" />
+    <ShellContent Title="Inventario" Route="inventario" ContentTemplate="{DataTemplate local:InventarioPage}" />
+    <ShellContent Title="Registrar venta" Route="venta" ContentTemplate="{DataTemplate local:VentaPage}" />
+    <ShellContent Title="Corte de caja" Route="corte" ContentTemplate="{DataTemplate local:CorteCajaPage}" />
+    <ShellContent Title="Empleados" Route="empleados" ContentTemplate="{DataTemplate local:EmpleadosPage}" />
+    <ShellContent Title="Proveedores" Route="proveedores" ContentTemplate="{DataTemplate local:ProveedoresPage}" />
 
 </Shell>
