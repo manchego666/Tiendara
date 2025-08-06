@@ -11,8 +11,8 @@ Este archivo describe los diagramas existentes y aquellos que se planean crear p
 
 ## ✅ Diagramas actuales
 
-- [x] `CasoDeUso_Tiendara.png` – Representa los principales casos de uso del dueño de tienda.
-- [x] `DiagramaDeClases.png` – Muestra la estructura de clases base y sus relaciones (Producto, Venta, Empleado, etc.)
+- [x] `CasosUso.png` – Representa los principales casos de uso del dueño de tienda.
+- [x] `DiagramaClases.png` – Muestra la estructura de clases base y sus relaciones (Producto, Venta, Empleado, etc.)
 
 ---
 
@@ -30,8 +30,8 @@ Este archivo describe los diagramas existentes y aquellos que se planean crear p
 Todos los diagramas deben estar en la carpeta:
 📁 Tiendara/
 └── 📁 Diagramas/
-├── CasoDeUso_Tiendara.png
-├── DiagramaDeClases.png
+├── CasosUso.png
+├── DiagramaClases.png
 └── ...
 
 
