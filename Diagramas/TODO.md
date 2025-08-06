@@ -1,3 +1,8 @@
+<p align="center">
+  <img src="https://github.com/manchego666/Tiendara/blob/master/Docs/Logo.png" alt="Tiendara Logo" width="400"/>
+</p>
+
+
 # 📌 TODO – Diagramas del proyecto Tiendara
 
 Este archivo describe los diagramas existentes y aquellos que se planean crear para apoyar el desarrollo de la aplicación Tiendara.
