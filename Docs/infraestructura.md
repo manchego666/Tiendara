@@ -35,8 +35,9 @@ Las funciones clave se dividen en módulos:
 
 ---
 
-## 🗂️ Clases actuales base
----
+## 🧾 Clases base (CapaDatos)
+
+```csharp
 //csharp
 // Ejemplo de clases principales en CapaDatos
 class Producto { int ID; string Nombre; decimal Precio; int Stock; }
@@ -45,6 +46,7 @@ class Empleado { int ID; string Nombre; string Rol; decimal Sueldo; }
 class Proveedor { int ID; string Nombre; string Telefono; string ProductoSuministrado; }
 class Usuario { int ID; string Correo; string Tipo; string ClaveAcceso; }
 class CorteCaja { int ID; DateTime Fecha; decimal TotalVentas; decimal SaldoInicial; }
+```
 ---
 💾 Persistencia de datos
 Por ahora:
