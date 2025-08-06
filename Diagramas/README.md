@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://github.com/manchego666/Tiendara/blob/master/Docs/Logo.png" alt="Tiendara Logo" width="400"/>
+</p>
+
 # 🧾 Diagramas del sistema – Tiendara
 
 En esta carpeta se encuentran los principales diagramas UML y gráficos de apoyo que representan la estructura y funcionamiento de la aplicación **Tiendara**.
