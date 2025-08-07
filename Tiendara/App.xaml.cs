@@ -5,11 +5,8 @@
         public App()
         {
             InitializeComponent();
+            MainPage = new RegistroInicioPage();
         }
 
-        protected override Window CreateWindow(IActivationState? activationState)
-        {
-            return new Window(new AppShell());
-        }
     }
 }
