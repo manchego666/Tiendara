@@ -37,7 +37,7 @@ namespace Tiendara
 
         private async void OnCerrarSesionClicked(object sender, EventArgs e)
         {
-            // Luego puedes navegar a Login o reiniciar app
+            // Luego poder navegar a Login o reiniciar app
             await DisplayAlert("Cerrar sesión", "Sesión cerrada correctamente", "OK");
         }
     }

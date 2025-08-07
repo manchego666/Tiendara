@@ -11,19 +11,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
+
 
 namespace Tiendara.CapaLogica
 {
     public static class InventarioService
     {
-        private static List<Producto> productos = new();
+        private static ObservableCollection<Producto> productos = new();
+
 
         public static void AgregarProducto(Producto producto)
         {
             productos.Add(producto);
         }
 
-        public static List<Producto> ObtenerTodos() => productos;
+        public static ObservableCollection<Producto> ObtenerTodos() => productos;
 
         public static Producto BuscarPorCodigo(string codigo) =>
             productos.FirstOrDefault(p => p.CodigoDeBarras == codigo);
@@ -41,9 +44,22 @@ namespace Tiendara.CapaLogica
 
         public static void EditarProducto(Producto actualizado)
         {
-            var index = productos.FindIndex(p => p.ID == actualizado.ID);
-            if (index >= 0)
-                productos[index] = actualizado;
+            for (int i = 0; i < productos.Count; i++)
+            {
+                if (productos[i].ID == actualizado.ID)
+                {
+                    productos[i] = actualizado;
+                    break;
+                }
+            }
         }
+
+
+        public static Producto ObtenerProductoPorId(int id)
+        {
+            return productos.FirstOrDefault(p => p.ID == id);
+        }
+
+
     }
 }
