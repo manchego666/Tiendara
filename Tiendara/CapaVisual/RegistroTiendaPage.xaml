@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Tiendara.CapaVisual.RegistroTiendaPage"
+             BackgroundColor="Black"
+             BackgroundImageSource="fondo_home.png"
+             Padding="0">
+
+    <Grid RowDefinitions="Auto,*,Auto" Padding="20">
+
+        <!-- Header -->
+        <VerticalStackLayout Grid.Row="0"
+                             Spacing="8"
+                             Padding="0,24,0,8"
+                             HorizontalOptions="Center">
+            <Image Source="icono_sonrisa.png" HeightRequest="72" WidthRequest="72"/>
+            <Label Text="Tiendara" TextColor="Gold" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center"/>
+            <Label Text="Registro de tienda" TextColor="White" Opacity="0.9" HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+
+        <!-- Tutorial -->
+        <VerticalStackLayout Grid.Row="1" Spacing="12">
+            <Frame BackgroundColor="#222" CornerRadius="12" Padding="18" HasShadow="True">
+                <VerticalStackLayout Spacing="10">
+                    <!-- Mensaje que parpadea -->
+                    <Label x:Name="lblMensaje"
+                           Text="¡Te ayudaré a organizar tu tienda! En el nombre puedes poner el que desees para tu tienda!!"
+                           TextColor="White"
+                           FontSize="16"
+                           Opacity="1"/>
+
+                    <Button x:Name="btnSiguienteMensaje"
+                            Text="Siguiente"
+                            Clicked="BtnSiguienteMensaje_Clicked"
+                            BackgroundColor="Gold"
+                            TextColor="Black"
+                            CornerRadius="10"
+                            HeightRequest="44"/>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Formulario (oculto hasta que termine el tutorial) -->
+            <Frame x:Name="formularioRegistro"
+                   BackgroundColor="#222"
+                   CornerRadius="12"
+                   Padding="18"
+                   HasShadow="True"
+                   IsVisible="False">
+                <VerticalStackLayout Spacing="10">
+                    <Entry x:Name="txtNombreTienda" Placeholder="Nombre de la tienda" TextColor="White" PlaceholderColor="#aaaaaa"/>
+                    <Entry x:Name="txtTipo" Placeholder="Tipo de negocio (restaurante, hotdogs, sushi, ropa...)" TextColor="White" PlaceholderColor="#aaaaaa"/>
+                    <Entry x:Name="txtHorario" Placeholder="Horario (opcional)" TextColor="White" PlaceholderColor="#aaaaaa"/>
+                    <Entry x:Name="txtTelefono" Placeholder="Teléfono" Keyboard="Telephone" TextColor="White" PlaceholderColor="#aaaaaa"/>
+                    <Entry x:Name="txtEmail" Placeholder="Correo electrónico" Keyboard="Email" TextColor="White" PlaceholderColor="#aaaaaa"/>
+
+                    <Button x:Name="btnRegistrar"
+                            Text="Registrar tienda"
+                            Clicked="OnRegistrarTiendaClicked"
+                            BackgroundColor="Gold"
+                            TextColor="Black"
+                            CornerRadius="12"
+                            HeightRequest="48"/>
+                </VerticalStackLayout>
+            </Frame>
+        </VerticalStackLayout>
+
+        <!-- Footer -->
+        <Label Grid.Row="2" Text="© Tiendara" TextColor="#aaaaaa" HorizontalOptions="Center" Margin="0,12,0,4"/>
+    </Grid>
+</ContentPage>

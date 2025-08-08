@@ -65,24 +65,40 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="CorteCajaPage.xaml">
+	  <MauiXaml Update="CapaVisual\Componentes\MenuLateralTiendara.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="EmpleadosPage.xaml">
+	  <MauiXaml Update="CapaVisual\CorteCajaPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="InventarioPage.xaml">
+	  <MauiXaml Update="CapaVisual\EmpleadosPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="ProveedoresPage.xaml">
+	  <MauiXaml Update="CapaVisual\HomeTutorialPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="RegistroInicioPage.xaml">
+	  <MauiXaml Update="CapaVisual\InventarioPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="VentaPage.xaml">
+	  <MauiXaml Update="CapaVisual\ProveedoresPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="CapaVisual\RegistroInicioPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="CapaVisual\RegistroTiendaPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="CapaVisual\tiendaradueno_home.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="CapaVisual\VentaPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="CapaVisual\Tutoriales\" />
 	</ItemGroup>
 
 </Project>

@@ -1,5 +1,7 @@
 ﻿using System;
 using Microsoft.Maui.Controls;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Tiendara;
 
@@ -29,7 +31,7 @@ public partial class RegistroInicioPage : ContentPage
         // Avanza al tocar
         var tap = new TapGestureRecognizer();
         tap.Tapped += AvanzarTutorial;
-        frameTutorial.GestureRecognizers.Add(tap);
+        contenedorAnimado.GestureRecognizers.Add(tap);
     }
 
     // Sobrescribe el evento de cargado
@@ -44,10 +46,9 @@ public partial class RegistroInicioPage : ContentPage
         _ = Parpadear(contenedorAnimado, animacionCuadro.Token);
     }
 
-
     private async void AnimarTutorial()
     {
-        while (frameTutorial.IsVisible)
+        while (contenedorAnimado.IsVisible)
         {
             await Task.WhenAll(
                 contenedorAnimado.FadeTo(0.2, 500),
@@ -61,9 +62,7 @@ public partial class RegistroInicioPage : ContentPage
         }
     }
 
-
-
-    private void AvanzarTutorial(object? sender, EventArgs e)
+    private async void AvanzarTutorial(object? sender, EventArgs e)
     {
         if (pasoTutorial < pasos.Length)
         {
@@ -75,11 +74,12 @@ public partial class RegistroInicioPage : ContentPage
             // Detener parpadeo del cuadro
             animacionCuadro?.Cancel();
 
-            // Ocultar mensaje y mostrar botón
-            frameTutorial.IsVisible = false;
-            btnMostrarRegistro.IsVisible = true;
+            // Desvanecer encabezado
+            await contenedorAnimado.FadeTo(0, 500);
+            contenedorAnimado.IsVisible = false;
 
-            // Iniciar parpadeo del botón
+            // Mostrar botón y animarlo
+            btnMostrarRegistro.IsVisible = true;
             animacionBoton = new CancellationTokenSource();
             _ = Parpadear(btnMostrarRegistro, animacionBoton.Token);
         }
@@ -94,7 +94,6 @@ public partial class RegistroInicioPage : ContentPage
         }
     }
 
-
     private void MostrarFormulario(object sender, EventArgs e)
     {
         animacionBoton?.Cancel();
@@ -102,10 +101,14 @@ public partial class RegistroInicioPage : ContentPage
         panelFormulario.IsVisible = true;
     }
 
-    private void OnRegistrarseClicked(object sender, EventArgs e)
+    private async void OnRegistrarseClicked(object sender, EventArgs e)
     {
-        DisplayAlert("Registro", "¡Gracias por registrarte!", "OK");
+        await DisplayAlert("Registro", "¡Gracias por registrarte!", "OK");
+
+        // Enviarlo a la siguiente pantalla del tutorial
+        await Navigation.PushAsync(new HomeTutorialPage());
     }
+
 
     private async void btnIniciarSesion_Clicked(object sender, EventArgs e)
     {

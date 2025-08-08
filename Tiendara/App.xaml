@@ -9,6 +9,32 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- 🎨 Estilo personalizado para botón dorado Tiendara -->
+            <Style x:Key="BotonTiendara" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="Gold"/>
+                <Setter Property="TextColor" Value="Black"/>
+                <Setter Property="CornerRadius" Value="10"/>
+                <Setter Property="FontAttributes" Value="Bold"/>
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup Name="CommonStates">
+                            <VisualState Name="Pressed">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="#B8860B"/>
+                                    <!-- dorado oscuro -->
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="Gold"/>
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

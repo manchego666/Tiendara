@@ -5,8 +5,10 @@
         public App()
         {
             InitializeComponent();
-            MainPage = new RegistroInicioPage();
+
+            MainPage = new NavigationPage(new RegistroInicioPage());
         }
+
 
     }
 }

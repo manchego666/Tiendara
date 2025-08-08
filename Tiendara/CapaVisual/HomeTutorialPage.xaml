@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Tiendara.HomeTutorialPage"
+             BackgroundImageSource="fondo_home.png"
+             BackgroundColor="Black">
+
+    <Grid RowDefinitions="Auto,*,Auto" Padding="20">
+
+        <!-- 🟡 LOGO + TÍTULO -->
+        <VerticalStackLayout Grid.Row="0"
+                             HorizontalOptions="Center"
+                             Spacing="10"
+                             Padding="0,40,0,10">
+            <Image Source="icono_sonrisa.png"
+                   HeightRequest="80"
+                   WidthRequest="80" />
+            <Label Text=""
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   TextColor="Gold"
+                   HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+
+        <!-- 📜 MENSAJE EXPLICATIVO INTERACTIVO -->
+        <Frame Grid.Row="1"
+       x:Name="frameExplicacion"
+       BackgroundColor="#222"
+       CornerRadius="30"
+       Padding="25"
+       HasShadow="True"
+       Margin="0,40,0,40"
+       HorizontalOptions="Center"
+       VerticalOptions="Center"
+       WidthRequest="320"
+       MinimumHeightRequest="120">
+            <Label x:Name="lblExplicacion"
+           Text="¡Bienvenido al siguiente paso! Aquí podrás registrar tu tienda."
+           FontSize="18"
+           TextColor="White"
+           HorizontalTextAlignment="Center"
+           VerticalTextAlignment="Center"/>
+        </Frame>
+
+        <!-- ✅ BOTÓN FINAL (oculto hasta terminar) -->
+        <Button Grid.Row="2"
+                x:Name="btnRegistrarTienda"
+                Text="Registrar tienda"
+                BackgroundColor="Gold"
+                TextColor="Black"
+                FontAttributes="Bold"
+                Clicked="btnRegistrarTienda_Clicked"
+                Margin="0,20,0,40"
+                HorizontalOptions="Center"
+                IsVisible="False"/>
+    </Grid>
+</ContentPage>
