@@ -1,6 +1,8 @@
 ﻿using Microsoft.Maui.Controls;
 using System;
 using System.Threading.Tasks;
+using Tiendara.CapaVisual.PaginasModulo;
+
 
 namespace Tiendara.CapaVisual.Componentes;
 
@@ -26,6 +28,9 @@ public partial class MenuLateralTiendara : ContentView
 
         // Botón mapa
         btnMapa.Clicked += OnMapaClicked;
+
+        //Botón Perfil
+        btnPerfil.Clicked += OnPerfilClicked;
     }
 
     // ===== Menú lateral =====
@@ -104,4 +109,12 @@ public partial class MenuLateralTiendara : ContentView
     {
         panelMapa.IsVisible = false;
     }
+
+    //Metodo para el boton de perfil
+    private async void OnPerfilClicked(object? sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new PerfilPage());
+        if (estaAbierto) await CerrarMenu();
+    }
+
 }

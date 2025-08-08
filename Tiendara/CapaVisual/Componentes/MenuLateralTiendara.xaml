@@ -44,7 +44,7 @@
                        FontAttributes="Bold"
                        HorizontalOptions="Center"/>
 
-                <Button Text="Perfil" Style="{StaticResource BotonTiendara}" />
+                <Button x:Name="btnPerfil" Text="Perfil" Style="{StaticResource BotonTiendara}" />
                 <Button Text="Perfil tienda" Style="{StaticResource BotonTiendara}" />
                 <Button Text="Empleados" Style="{StaticResource BotonTiendara}" />
 

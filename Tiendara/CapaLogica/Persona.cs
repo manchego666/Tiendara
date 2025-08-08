@@ -25,6 +25,8 @@ namespace Tiendara.CapaLogica
         // Datos principales
         public string Nombre { get; set; } = string.Empty;
         public string Apellidos { get; set; } = string.Empty;
+        public string Contrasena { get; set; } = string.Empty;
+
 
         // Contacto (opcionales por ahora)
         public string? Correo { get; set; }
