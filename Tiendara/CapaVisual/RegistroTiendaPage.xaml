@@ -13,8 +13,6 @@
                              Spacing="8"
                              Padding="0,24,0,8"
                              HorizontalOptions="Center">
-            <Image Source="icono_sonrisa.png" HeightRequest="72" WidthRequest="72"/>
-            <Label Text="Tiendara" TextColor="Gold" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center"/>
             <Label Text="Registro de tienda" TextColor="White" Opacity="0.9" HorizontalOptions="Center"/>
         </VerticalStackLayout>
 
