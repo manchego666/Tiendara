@@ -47,7 +47,10 @@
                 <Button Text="Perfil" Style="{StaticResource BotonTiendara}" />
                 <Button Text="Perfil tienda" Style="{StaticResource BotonTiendara}" />
                 <Button Text="Empleados" Style="{StaticResource BotonTiendara}" />
-                <Button Text="Mapa" Style="{StaticResource BotonTiendara}" />
+
+                <!-- 👇 Necesitamos nombre para enganchar el click -->
+                <Button x:Name="btnMapa" Text="Mapa" Style="{StaticResource BotonTiendara}" />
+
                 <Button Text="Inventario" Style="{StaticResource BotonTiendara}" />
                 <Button Text="Chat" Style="{StaticResource BotonTiendara}" />
                 <Button Text="VIP" Style="{StaticResource BotonTiendara}" />
@@ -57,5 +60,44 @@
 
             </VerticalStackLayout>
         </Grid>
+
+        <!-- 🧭 PANEL MAPA (flotante, no pantalla completa) -->
+        <Border x:Name="panelMapa"
+                IsVisible="False"
+                BackgroundColor="#1E1E1E"
+                Stroke="#444" StrokeThickness="1"
+                WidthRequest="360" HeightRequest="360"
+                ZIndex="150"
+                AbsoluteLayout.LayoutBounds="1,1,360,360"
+                AbsoluteLayout.LayoutFlags="PositionProportional">
+
+            <Grid RowDefinitions="Auto,*">
+                <!-- Header -->
+                <Grid Padding="8" BackgroundColor="#262626">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Label Text="Mapa (beta)" TextColor="White" FontAttributes="Bold"/>
+                    <Label Text="✕"
+                           Grid.Column="1"
+                           TextColor="White"
+                           FontSize="18"
+                           Padding="6">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnCerrarPanelMapaTapped"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Grid>
+
+                <!-- 👇 Mapa con WebView (Leaflet) -->
+                <WebView x:Name="webMapa"
+                         Grid.Row="1"
+                         VerticalOptions="FillAndExpand"
+                         HorizontalOptions="FillAndExpand" />
+            </Grid>
+        </Border>
+
     </AbsoluteLayout>
 </ContentView>
