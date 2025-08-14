@@ -1,96 +1,51 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Tiendara.CapaVisual.PaginasModulo.PerfilPage"
-             Title="Perfil">
-    <Grid Padding="16" BackgroundColor="#1b1b1b">
-        <ScrollView>
-            <VerticalStackLayout Spacing="14" Padding="0,8">
+<ContentPage
+  x:Class="Tiendara.CapaVisual.PaginasModulo.PerfilPage"
+  xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+  xmlns:portada="clr-namespace:Tiendara.CapaVisual.Componentes.Portada"
+  xmlns:nav="clr-namespace:Tiendara.CapaVisual.Componentes.Navegacion"
+  xmlns:comp="clr-namespace:Tiendara.CapaVisual.Componentes"
+  xmlns:pub="clr-namespace:Tiendara.CapaVisual.Componentes.Publicaciones"
+  Title="Perfil"
+  Shell.NavBarIsVisible="False"
+  NavigationPage.HasNavigationBar="False">
 
-                <!-- Avatar con chip 'Foto' superpuesto -->
-                <Grid HorizontalOptions="Center" Margin="0,8,0,0">
-                    <Grid HeightRequest="128" WidthRequest="128">
-                        <Frame Padding="0" HasShadow="False"
-                   CornerRadius="999"
-                   BackgroundColor="#222">
-                            <Image x:Name="imgAvatar"
-                     Source="avatar_default.png"
-                     Aspect="AspectFill">
-                                <Image.GestureRecognizers>
-                                    <!-- Tap en la foto = ver a pantalla completa -->
-                                    <TapGestureRecognizer Tapped="OnAvatarTapped"/>
-                                </Image.GestureRecognizers>
-                            </Image>
-                        </Frame>
+    <!-- 3 filas: portada / contenido / barra inferior -->
+    <Grid BackgroundColor="#0D0F15" RowDefinitions="Auto,*,Auto">
 
-                        <!-- Chip 'Foto' en esquina inferior derecha -->
-                        <Frame x:Name="chipFoto"
-                   Padding="10,6"
-                   CornerRadius="12"
-                   BackgroundColor="#3a2f00"
-                   HorizontalOptions="End"
-                   VerticalOptions="End"
-                   Margin="0,0,4,4">
-                            <Label Text="Foto" TextColor="#FFD166" FontSize="12" FontAttributes="Bold">
-                                <Label.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="OnFotoChipTapped"/>
-                                </Label.GestureRecognizers>
-                            </Label>
-                            <Frame.VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup Name="CommonStates">
-                                    <VisualState Name="Normal"/>
-                                    <VisualState Name="Pressed">
-                                        <VisualState.Setters>
-                                            <Setter Property="BackgroundColor" Value="#5a4700"/>
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                </VisualStateGroup>
-                            </Frame.VisualStateManager.VisualStateGroups>
-                        </Frame>
-                    </Grid>
-                </Grid>
+        <!-- Portada/hero -->
+        <portada:PortadaPerfilView x:Name="portada"
+                               Grid.Row="0"
+                               Modo="Usuario"
+                               Titulo="Tiendara Pro"
+                               Subtitulo="Dueño"
+                               TemaId="Espacio"
+                               TiendasCount="0"
+                               NoticiasCount="0" />
 
-                <!-- Nombre -->
-                <Label x:Name="lblNombre" Text="Tiendara Pro"
-               FontSize="20" HorizontalTextAlignment="Center"
-               TextColor="White" />
+        <!-- Publicaciones (IMPORTANTE: x:Name="pub") -->
+        <pub:PublicacionesView x:Name="pub"
+                           Grid.Row="1"
+                           Modo="Usuario"
+                           AutorNombre="{Binding Source={x:Reference portada}, Path=Titulo}"
+                           Margin="12,6,12,28"/>
 
-                <!-- Rol (chip) -->
-                <Frame Padding="6,2" CornerRadius="10" BackgroundColor="#333"
-               HorizontalOptions="Center">
-                    <Label x:Name="lblRol" Text="Dueño" TextColor="#FFD166" FontAttributes="Bold"/>
-                </Frame>
+        <!-- Barra inferior -->
+        <nav:BarraNavegacionInferior x:Name="nav"
+                                 Grid.Row="2"
+                                 SelectedTab="Home"/>
 
-                <!-- Mini estadísticas -->
-                <Grid ColumnDefinitions="*,*" HorizontalOptions="Center" WidthRequest="260" Padding="0,4">
-                    <Label x:Name="lblEmpleados" Grid.Column="0" Text="Empleados: 0" TextColor="#ccc"
-                 HorizontalTextAlignment="Center"/>
-                    <Label x:Name="lblTiendas"   Grid.Column="1" Text="Tiendas: 0"   TextColor="#ccc"
-                 HorizontalTextAlignment="Center"/>
-                </Grid>
+        <!-- Menú lateral -->
+        <comp:MenuLateralTiendara x:Name="menuLateral"
+                              Grid.RowSpan="3"/>
 
-                <!-- Botón Editar (compacto y dorado) -->
-                <Button Text="Editar datos"
-                Clicked="OnEditarClicked"
-                BackgroundColor="#FFD166"
-                TextColor="#2b2b2b"
-                CornerRadius="10"
-                Padding="12,8"
-                HorizontalOptions="Center"
-                WidthRequest="220">
-                    <Button.VisualStateManager.VisualStateGroups>
-                        <VisualStateGroup Name="CommonStates">
-                            <VisualState Name="Normal"/>
-                            <VisualState Name="Pressed">
-                                <VisualState.Setters>
-                                    <Setter Property="BackgroundColor" Value="#E6BE5A"/>
-                                </VisualState.Setters>
-                            </VisualState>
-                        </VisualStateGroup>
-                    </Button.VisualStateManager.VisualStateGroups>
-                </Button>
-
-            </VerticalStackLayout>
-        </ScrollView>
+        <!-- Botón hamburguesa (monedita) flotante -->
+        <comp:BotonMenuLateralView x:Name="btnMenu"
+                               Grid.RowSpan="3"
+                               HorizontalOptions="Start"
+                               VerticalOptions="Start"
+                               Margin="12"
+                               ZIndex="2000"/>
     </Grid>
 </ContentPage>

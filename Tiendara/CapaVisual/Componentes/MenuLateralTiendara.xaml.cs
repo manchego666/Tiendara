@@ -1,120 +1,186 @@
 ﻿using Microsoft.Maui.Controls;
 using System;
 using System.Threading.Tasks;
+using Tiendara.CapaDatos.Repos;
+using Tiendara.CapaLogica.Servicios;
 using Tiendara.CapaVisual.PaginasModulo;
-
+using Tiendara.CapaVisual.Autenticacion;
 
 namespace Tiendara.CapaVisual.Componentes;
 
 public partial class MenuLateralTiendara : ContentView
 {
-    private bool tiendaAbierta = false;
-    private bool estaAbierto = false;
-    private bool mapaCargado = false;   //para no recargar cada vez
+    bool _abierto;
+    bool _tiendaAbierta;
 
     public MenuLateralTiendara()
     {
         InitializeComponent();
 
-        var tapHamburguesa = new TapGestureRecognizer();
-        tapHamburguesa.Tapped += async (s, e) => await ToggleMenu();
-        btnHamburguesa.GestureRecognizers.Add(tapHamburguesa);
+        // Estado inicial: no intercepta toques
+        this.InputTransparent = true;
+        this.ZIndex = 0;
 
-        var tapCerrar = new TapGestureRecognizer();
-        tapCerrar.Tapped += async (s, e) => await CerrarMenu();
-        btnCerrarMenu.GestureRecognizers.Add(tapCerrar);
+        menuPanel.IsVisible = false;
+        menuPanel.InputTransparent = true;
 
-        btnEstadoTienda.Clicked += OnToggleTiendaClicked;
+        scrim.IsVisible = false;
+        scrim.InputTransparent = true;
 
-        // Botón mapa
-        btnMapa.Clicked += OnMapaClicked;
-
-        //Botón Perfil
+        // Botones
         btnPerfil.Clicked += OnPerfilClicked;
+        btnPerfilTienda.Clicked += OnPerfilTiendaClicked;
+        btnInventario.Clicked += OnInventarioClicked;
+        btnRetiros.Clicked += OnRetirosClicked;
+        btnEstadoTienda.Clicked += OnToggleTiendaClicked;
+        btnConfig.Clicked += OnConfigClicked;
+        btnAcerca.Clicked += OnAcercaClicked;
+        btnCerrarSesion.Clicked += OnCerrarSesionClicked;
     }
 
-    // ===== Menú lateral =====
+    // ===== API pública =====
     public async Task ToggleMenu()
     {
-        if (!estaAbierto) await AbrirMenu();
-        else await CerrarMenu();
+        if (_abierto) await CerrarAsync();
+        else await AbrirAsync();
     }
 
-    public async Task AbrirMenu()
+    public async Task AbrirAsync()
     {
-        if (estaAbierto) return;
-        menuLateral.IsVisible = true;
-        await menuLateral.TranslateTo(0, 0, 300, Easing.SinOut);
-        estaAbierto = true;
+        if (_abierto) return;
+        _abierto = true;
+
+        this.InputTransparent = false;
+        this.ZIndex = 1000;
+
+        scrim.IsVisible = true;
+        scrim.InputTransparent = false;
+
+        menuPanel.IsVisible = true;
+        menuPanel.InputTransparent = false;
+
+        var offset = menuPanel.Width > 0 ? -menuPanel.Width - 40 : -380;
+        menuPanel.TranslationX = offset;
+
+        var fade = scrim.FadeTo(1, 160, Easing.CubicOut);
+        var slide = menuPanel.TranslateTo(0, 0, 260, Easing.CubicOut);
+        await Task.WhenAll(fade, slide);
     }
 
-    public async Task CerrarMenu()
+    public async Task CerrarAsync()
     {
-        if (!estaAbierto) return;
-        await menuLateral.TranslateTo(-250, 0, 300, Easing.SinIn);
-        menuLateral.IsVisible = false;
-        estaAbierto = false;
+        if (!_abierto) return;
+        _abierto = false;
+
+        var offset = -(menuPanel.Width > 0 ? menuPanel.Width + 40 : 380);
+        var slide = menuPanel.TranslateTo(offset, 0, 220, Easing.CubicIn);
+        var fade = scrim.FadeTo(0, 180, Easing.CubicIn);
+        await Task.WhenAll(slide, fade);
+
+        menuPanel.IsVisible = false;
+        menuPanel.InputTransparent = true;
+
+        scrim.IsVisible = false;
+        scrim.InputTransparent = true;
+
+        this.InputTransparent = true;
+        this.ZIndex = 0;
     }
 
-    private void ActualizarTextoBotonTienda()
-        => btnEstadoTienda.Text = tiendaAbierta ? "Cerrar tienda" : "Abrir tienda";
+    private async void OnScrimTapped(object? sender, EventArgs e) => await CerrarAsync();
 
-    private async void OnToggleTiendaClicked(object sender, EventArgs e)
-    {
-        tiendaAbierta = !tiendaAbierta;
-        ActualizarTextoBotonTienda();
-        await Application.Current.MainPage.DisplayAlert(
-            "Estado de la tienda",
-            tiendaAbierta ? "¡Tienda abierta!" : "Tienda cerrada.",
-            "OK");
-    }
-
-    // ===== Mapa (WebView + Leaflet) =====
-    private async void OnMapaClicked(object? sender, EventArgs e)
-    {
-        panelMapa.IsVisible = true;
-
-        if (!mapaCargado)
-        {
-            var html = @"
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset='utf-8'/>
-<meta name='viewport' content='width=device-width,initial-scale=1,maximum-scale=1'/>
-<link rel='stylesheet' href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'/>
-<style>html,body,#map{height:100%;margin:0}</style>
-</head>
-<body>
-<div id='map'></div>
-<script src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'></script>
-<script>
-  var lat=24.799, lng=-107.389, z=13; // Culiacán ejemplo
-  var map=L.map('map').setView([lat,lng],z);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    maxZoom:19, attribution:'&copy; OpenStreetMap'
-  }).addTo(map);
-  L.marker([lat,lng]).addTo(map).bindPopup('Aquí la tienda');
-</script>
-</body>
-</html>";
-            webMapa.Source = new HtmlWebViewSource { Html = html };
-            mapaCargado = true;
-        }
-
-        if (estaAbierto) await CerrarMenu();
-    }
-
-    private void OnCerrarPanelMapaTapped(object sender, TappedEventArgs e)
-    {
-        panelMapa.IsVisible = false;
-    }
-
-    //Metodo para el boton de perfil
-    private async void OnPerfilClicked(object? sender, EventArgs e)
+    // ===== Navegación / acciones =====
+    private async void OnPerfilClicked(object? s, EventArgs e)
     {
         await Navigation.PushAsync(new PerfilPage());
-        if (estaAbierto) await CerrarMenu();
+        await CerrarAsync();
     }
 
+    private async void OnPerfilTiendaClicked(object? s, EventArgs e)
+    {
+        try
+        {
+            if (!SesionActual.Autenticado)
+            {
+                await Application.Current.MainPage.DisplayAlert("Perfil de negocio", "Inicia sesión primero.", "OK");
+                return;
+            }
+
+            var repo = new NegocioRepo();
+            var tiendas = await repo.ListByUsuarioAsync(SesionActual.UsuarioId);
+
+            if (tiendas.Count == 0)
+            {
+                var crear = await Application.Current.MainPage.DisplayAlert(
+                    "Perfil de negocio",
+                    "Primero registra tu negocio para entrar al perfil.",
+                    "Registrar", "Cancelar");
+
+                if (crear)
+                    await Navigation.PushAsync(new RegistroTiendaPage());
+                return;
+            }
+
+            await Navigation.PushAsync(new PerfilNegocioPage(/*tiendas.First().Id*/));
+        }
+        catch (Exception ex)
+        {
+            await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
+        }
+        finally
+        {
+            await CerrarAsync();
+        }
+    }
+
+    private async void OnInventarioClicked(object? s, EventArgs e)
+    {
+        await Navigation.PushAsync(new InventarioPage());
+        await CerrarAsync();
+    }
+
+    private async void OnRetirosClicked(object? s, EventArgs e)
+    {
+        await Navigation.PushAsync(new RetirosPage());
+        await CerrarAsync();
+    }
+
+    private async void OnToggleTiendaClicked(object? s, EventArgs e)
+    {
+        _tiendaAbierta = !_tiendaAbierta;
+        btnEstadoTienda.Text = _tiendaAbierta ? "Cerrar tienda" : "Abrir tienda";
+        await Application.Current.MainPage.DisplayAlert(
+            "Estado de la tienda",
+            _tiendaAbierta ? "¡Tienda abierta!" : "Tienda cerrada.",
+            "OK");
+        await CerrarAsync();
+    }
+
+    private async void OnConfigClicked(object? s, EventArgs e)
+    {
+        // await Navigation.PushAsync(new ConfiguracionPage());
+        await Application.Current.MainPage.DisplayAlert("Configuración", "Próximamente.", "OK");
+        await CerrarAsync();
+    }
+
+    private async void OnAcercaClicked(object? s, EventArgs e)
+    {
+        // await Navigation.PushAsync(new AcercaPage());
+        await Application.Current.MainPage.DisplayAlert("Acerca de", "Tiendara — beta.", "OK");
+        await CerrarAsync();
+    }
+
+    private async void OnCerrarSesionClicked(object? s, EventArgs e)
+    {
+        var ok = await Application.Current.MainPage.DisplayAlert(
+            "Cerrar sesión", "¿Seguro que deseas salir?", "Sí", "Cancelar");
+        if (!ok) return;
+
+        try { SesionActual.Cerrar(); } catch { /* no-op */ }
+
+        await CerrarAsync();
+
+        // Si tienes LoginPage/RegistroInicioPage, navega ahí
+        // try { await Navigation.PushAsync(new LoginPage()); } catch {}
+    }
 }

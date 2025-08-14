@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Tiendara.CapaVisual.Autenticacion.RegistroTiendaPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Registrar tienda"
+    Shell.NavBarIsVisible="False"
+    NavigationPage.HasNavigationBar="False">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="12">
+            <Label Text="Crea tu tienda" FontSize="22" FontAttributes="Bold"/>
+
+            <Entry x:Name="txtNombre" Placeholder="Nombre de la tienda" TextColor="Black"/>
+            <Entry x:Name="txtGiro" Placeholder="Giro (opcional)" TextColor="Black"/>
+            <Entry x:Name="txtTelefono" Placeholder="Teléfono (opcional)" Keyboard="Telephone" TextColor="Black"/>
+            <Editor x:Name="txtDireccion" Placeholder="Dirección (opcional)" AutoSize="TextChanges" TextColor="Black"/>
+
+            <Button Text="Guardar" Clicked="OnGuardarClicked"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

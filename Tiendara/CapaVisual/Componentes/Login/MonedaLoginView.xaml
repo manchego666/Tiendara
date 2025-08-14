@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="Tiendara.CapaVisual.Componentes.Login.MonedaLoginView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <ContentView.Resources>
+        <!-- Entries sin highlight fuerte (solo cambiamos BackgroundColor al enfocar) -->
+        <Style TargetType="Entry">
+            <Setter Property="TextColor" Value="#111"/>
+            <Setter Property="PlaceholderColor" Value="#333333AA"/>
+            <Setter Property="BackgroundColor" Value="#FFFFFF33"/>
+            <Setter Property="HeightRequest" Value="38"/>
+            <Setter Property="Margin" Value="0,2"/>
+            <Setter Property="ClearButtonVisibility" Value="WhileEditing"/>
+            <Setter Property="HorizontalOptions" Value="Fill"/>
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="#FFFFFF33"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Focused">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="#FFFFFF4A"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+
+        <Style TargetType="Label">
+            <Setter Property="TextColor" Value="#111"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="CornerRadius" Value="18"/>
+            <Setter Property="HeightRequest" Value="42"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+    </ContentView.Resources>
+
+    <Grid HorizontalOptions="Center" VerticalOptions="Center">
+        <!-- MONEDA -->
+        <Grid x:Name="Coin" WidthRequest="480" HeightRequest="480" Opacity="0.92">
+            <Grid.Clip>
+                <EllipseGeometry x:Name="CoinClip"/>
+            </Grid.Clip>
+
+            <!-- Disco dorado uniforme con radial gradient -->
+            <Grid>
+                <Grid.Background>
+                    <RadialGradientBrush Radius="1.0" Center="0.35,0.35">
+                        <GradientStop Color="#F0C870" Offset="0.00"/>
+                        <GradientStop Color="#D9B45A" Offset="0.25"/>
+                        <GradientStop Color="#B0832E" Offset="0.85"/>
+                        <GradientStop Color="#9A7527" Offset="1.00"/>
+                    </RadialGradientBrush>
+                </Grid.Background>
+
+                <!-- Shimmer arriba pero sin bloquear toques -->
+                <Border x:Name="Shimmer" IsVisible="False" Opacity="0" InputTransparent="True">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#00FFFFFF" Offset="0.00"/>
+                            <GradientStop Color="#66FFFFFF" Offset="0.50"/>
+                            <GradientStop Color="#00FFFFFF" Offset="1.00"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
+            </Grid>
+
+            <!-- FRONT = LOGIN -->
+            <VerticalStackLayout x:Name="FrontPanel" Padding="24" Spacing="8"
+                                 VerticalOptions="Center" HorizontalOptions="Center" IsVisible="True">
+                <Label Text="Iniciar sesión" FontAttributes="Bold" FontSize="20"
+                       HorizontalTextAlignment="Center" Margin="0,0,0,4"/>
+
+                <Grid ColumnDefinitions="Auto,*">
+                    <Label Text="Email:" VerticalTextAlignment="Center" Margin="0,0,8,0"/>
+                    <Entry x:Name="tbLoginEmail" Grid.Column="1" Placeholder="correo@ejemplo.com" Keyboard="Email"/>
+                </Grid>
+
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Label Text="Contraseña:" VerticalTextAlignment="Center" Margin="0,0,8,0"/>
+                    <Entry x:Name="tbLoginPass" Grid.Column="1" Placeholder="••••••" IsPassword="True"/>
+                    <Button Grid.Column="2" Text="👁" Padding="8,0" BackgroundColor="Transparent"
+                            Clicked="OnToggleLoginPass"/>
+                </Grid>
+
+                <Button Text="Iniciar sesión" Clicked="OnLoginClicked" Margin="0,6,0,0"/>
+                <Button Text="Crear cuenta" Clicked="OnFlipToRegister" BackgroundColor="#303030" TextColor="White"/>
+            </VerticalStackLayout>
+
+            <!-- BACK = REGISTER -->
+            <VerticalStackLayout x:Name="BackPanel" Padding="24" Spacing="8"
+                                 VerticalOptions="Center" HorizontalOptions="Center" IsVisible="False">
+                <Label Text="Crear cuenta" FontAttributes="Bold" FontSize="20"
+                       HorizontalTextAlignment="Center" Margin="0,0,0,4"/>
+
+                <Grid ColumnDefinitions="Auto,*">
+                    <Label Text="Nombre:" VerticalTextAlignment="Center" Margin="0,0,8,0"/>
+                    <Entry x:Name="tbRegNombre" Grid.Column="1" Placeholder="Tu nombre"/>
+                </Grid>
+
+                <Grid ColumnDefinitions="Auto,*">
+                    <Label Text="Email:" VerticalTextAlignment="Center" Margin="0,0,8,0"/>
+                    <Entry x:Name="tbRegEmail" Grid.Column="1" Placeholder="correo@ejemplo.com" Keyboard="Email"/>
+                </Grid>
+
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Label Text="Contraseña:" VerticalTextAlignment="Center" Margin="0,0,8,0"/>
+                    <Entry x:Name="tbRegPass" Grid.Column="1" Placeholder="mínimo 6 caracteres" IsPassword="True"/>
+                    <Button Grid.Column="2" Text="👁" Padding="8,0" BackgroundColor="Transparent"
+                            Clicked="OnToggleRegPass"/>
+                </Grid>
+
+                <Button Text="Registrarse" Clicked="OnRegisterClicked" Margin="0,6,0,0"/>
+                <!-- Sin "Volver al login": auto-flip después del éxito -->
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
+</ContentView>

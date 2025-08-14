@@ -1,14 +1,12 @@
-﻿namespace Tiendara
+﻿using Microsoft.Maui.Controls;
+
+namespace Tiendara;
+
+public partial class App : Application
 {
-    public partial class App : Application
+    public App()
     {
-        public App()
-        {
-            InitializeComponent();
-
-            MainPage = new NavigationPage(new RegistroInicioPage());
-        }
-
-
+        InitializeComponent();
+        MainPage = new AppShell(); // ← Asegura que usamos Shell
     }
 }

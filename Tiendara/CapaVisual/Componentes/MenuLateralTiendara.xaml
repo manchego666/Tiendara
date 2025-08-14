@@ -1,101 +1,326 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Tiendara.CapaVisual.Componentes.MenuLateralTiendara"
-             x:Name="this">
+<ContentView
+    x:Class="Tiendara.CapaVisual.Componentes.MenuLateralTiendara"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
+    <!-- ===== Recursos locales ===== -->
+    <ContentView.Resources>
+        <Color x:Key="AccentYellow">#FFD166</Color>
+        <Color x:Key="GlassDark">#1A0B0B0C</Color>
+        <Color x:Key="ItemIdle">#262626</Color>
+        <Color x:Key="ItemPressed">#FFD166</Color>
+        <Color x:Key="DividerColor">#2A2A2A</Color>
+        <Color x:Key="TextDim">#B0B0B0</Color>
+
+        <Style x:Key="GlassPanel" TargetType="Border">
+            <Setter Property="StrokeShape">
+                <Setter.Value>
+                    <RoundRectangle CornerRadius="28"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BackgroundColor" Value="{StaticResource GlassDark}"/>
+            <Setter Property="StrokeThickness" Value="0"/>
+            <Setter Property="Shadow">
+                <Setter.Value>
+                    <Shadow Brush="Black" Opacity="0.25" Radius="22" Offset="0,10"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Padding" Value="18"/>
+        </Style>
+
+        <Style x:Key="MenuButton" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="{StaticResource ItemIdle}"/>
+            <Setter Property="TextColor" Value="White"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Padding" Value="14,10"/>
+            <Setter Property="HeightRequest" Value="48"/>
+            <Setter Property="FontAttributes" Value="Bold"/>
+            <Setter Property="ContentLayout" Value="Left,12"/>
+            <Setter Property="BorderColor" Value="#00000000"/>
+        </Style>
+
+        <Style x:Key="Divider" TargetType="BoxView">
+            <Setter Property="HeightRequest" Value="1"/>
+            <Setter Property="BackgroundColor" Value="{StaticResource DividerColor}"/>
+            <Setter Property="Opacity" Value="0.5"/>
+        </Style>
+    </ContentView.Resources>
+
+    <!-- ===== Overlay ===== -->
     <AbsoluteLayout>
 
-        <!-- 🔸 Botón hamburguesa flotante SIEMPRE visible -->
-        <Label x:Name="btnHamburguesa"
-               Text="≡"
-               FontSize="32"
-               TextColor="Gold"
-               Margin="15"
-               HorizontalOptions="Start"
-               VerticalOptions="Start"
-               ZIndex="200"
-               InputTransparent="False"
-               AbsoluteLayout.LayoutBounds="0,0,50,50"
-               AbsoluteLayout.LayoutFlags="None"/>
+        <!-- SCRIM -->
+        <BoxView x:Name="scrim"
+                 IsVisible="False"
+                 Opacity="0"
+                 Color="#00000088"
+                 InputTransparent="True"
+                 AbsoluteLayout.LayoutBounds="0,0,1,1"
+                 AbsoluteLayout.LayoutFlags="All">
+            <BoxView.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnScrimTapped"/>
+            </BoxView.GestureRecognizers>
+        </BoxView>
 
-        <!-- 🔹 Menú lateral deslizable -->
-        <Grid x:Name="menuLateral"
-              BackgroundColor="#222"
-              WidthRequest="250"
-              IsVisible="False"
-              Padding="20"
-              TranslationX="-250"
-              ZIndex="99"
-              AbsoluteLayout.LayoutBounds="0,0,250,1"
-              AbsoluteLayout.LayoutFlags="PositionProportional,HeightProportional">
-
-            <VerticalStackLayout Spacing="15">
-
-                <Label Text="←"
-                       FontSize="28"
-                       TextColor="Gold"
-                       HorizontalOptions="Start"
-                       x:Name="btnCerrarMenu"/>
-
-                <Label Text="Menú Tiendara"
-                       FontSize="20"
-                       TextColor="Gold"
-                       FontAttributes="Bold"
-                       HorizontalOptions="Center"/>
-
-                <Button x:Name="btnPerfil" Text="Perfil" Style="{StaticResource BotonTiendara}" />
-                <Button Text="Perfil tienda" Style="{StaticResource BotonTiendara}" />
-                <Button Text="Empleados" Style="{StaticResource BotonTiendara}" />
-
-                <!-- 👇 Necesitamos nombre para enganchar el click -->
-                <Button x:Name="btnMapa" Text="Mapa" Style="{StaticResource BotonTiendara}" />
-
-                <Button Text="Inventario" Style="{StaticResource BotonTiendara}" />
-                <Button Text="Chat" Style="{StaticResource BotonTiendara}" />
-                <Button Text="VIP" Style="{StaticResource BotonTiendara}" />
-                <Button Text="Retiros" Style="{StaticResource BotonTiendara}" />
-                <Button x:Name="btnEstadoTienda" Text="Abrir tienda" Style="{StaticResource BotonTiendara}" />
-                <Button Text="Ayuda" Style="{StaticResource BotonTiendara}" />
-
-            </VerticalStackLayout>
-        </Grid>
-
-        <!-- 🧭 PANEL MAPA (flotante, no pantalla completa) -->
-        <Border x:Name="panelMapa"
+        <!-- PANEL flotante (no full height) -->
+        <Border x:Name="menuPanel"
+                Style="{StaticResource GlassPanel}"
+                WidthRequest="340"
                 IsVisible="False"
-                BackgroundColor="#1E1E1E"
-                Stroke="#444" StrokeThickness="1"
-                WidthRequest="360" HeightRequest="360"
-                ZIndex="150"
-                AbsoluteLayout.LayoutBounds="1,1,360,360"
-                AbsoluteLayout.LayoutFlags="PositionProportional">
+                TranslationX="-380"
+                AbsoluteLayout.LayoutBounds="0,0,AutoSize,AutoSize"
+                AbsoluteLayout.LayoutFlags="None"
+                Margin="12,18,0,0">
 
-            <Grid RowDefinitions="Auto,*">
-                <!-- Header -->
-                <Grid Padding="8" BackgroundColor="#262626">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+            <Grid RowDefinitions="Auto,Auto,Auto">
 
-                    <Label Text="Mapa (beta)" TextColor="White" FontAttributes="Bold"/>
-                    <Label Text="✕"
+                <!-- Header SIN icono (título + versión) -->
+                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" Padding="4,2,4,12">
+                    <BoxView WidthRequest="36" HeightRequest="36" Margin="0,0,10,0"/>
+                    <Label Text="Menú Tiendara"
                            Grid.Column="1"
                            TextColor="White"
-                           FontSize="18"
-                           Padding="6">
-                        <Label.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnCerrarPanelMapaTapped"/>
-                        </Label.GestureRecognizers>
-                    </Label>
+                           FontSize="22"
+                           FontAttributes="Bold"/>
+                    <Label Text="Versión beta"
+                           Grid.Row="1" Grid.Column="1"
+                           TextColor="{StaticResource TextDim}"
+                           FontSize="12"
+                           Margin="0,-2,0,0"/>
                 </Grid>
 
-                <!-- 👇 Mapa con WebView (Leaflet) -->
-                <WebView x:Name="webMapa"
-                         Grid.Row="1"
-                         VerticalOptions="FillAndExpand"
-                         HorizontalOptions="FillAndExpand" />
+                <!-- Items -->
+                <ScrollView Grid.Row="1">
+                    <VerticalStackLayout Spacing="12">
+
+                        <!-- PERFIL -->
+                        <Button x:Name="btnPerfil"
+                                Style="{StaticResource MenuButton}"
+                                Text="Perfil"
+                                ImageSource="ic_perfil_idle.png">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroupList>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{StaticResource ItemIdle}"/>
+                                                <Setter Property="TextColor" Value="White"/>
+                                                <Setter Property="ImageSource" Value="ic_perfil_idle.png"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{StaticResource ItemPressed}"/>
+                                                <Setter Property="TextColor" Value="#1B1B1B"/>
+                                                <Setter Property="ImageSource" Value="ic_perfil_active.png"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateGroupList>
+                            </VisualStateManager.VisualStateGroups>
+                        </Button>
+
+                        <!-- PERFIL DE NEGOCIO -->
+                        <Button x:Name="btnPerfilTienda"
+                                Style="{StaticResource MenuButton}"
+                                Text="Perfil de negocio"
+                                ImageSource="ic_perfil_negocio_idle.png">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroupList>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{StaticResource ItemIdle}"/>
+                                                <Setter Property="TextColor" Value="White"/>
+                                                <Setter Property="ImageSource" Value="ic_perfil_negocio_idle.png"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{StaticResource ItemPressed}"/>
+                                                <Setter Property="TextColor" Value="#1B1B1B"/>
+                                                <Setter Property="ImageSource" Value="ic_perfil_negocio_active.png"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateGroupList>
+                            </VisualStateManager.VisualStateGroups>
+                        </Button>
+
+                        <BoxView Style="{StaticResource Divider}"/>
+
+                        <!-- INVENTARIO -->
+                        <Button x:Name="btnInventario"
+                                Style="{StaticResource MenuButton}"
+                                Text="Inventario"
+                                ImageSource="ic_inventario_idle.png">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroupList>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{StaticResource ItemIdle}"/>
+                                                <Setter Property="TextColor" Value="White"/>
+                                                <Setter Property="ImageSource" Value="ic_inventario_idle.png"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{StaticResource ItemPressed}"/>
+                                                <Setter Property="TextColor" Value="#1B1B1B"/>
+                                                <Setter Property="ImageSource" Value="ic_inventario_active.png"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateGroupList>
+                            </VisualStateManager.VisualStateGroups>
+                        </Button>
+
+                        <!-- RETIROS -->
+                        <Button x:Name="btnRetiros"
+                                Style="{StaticResource MenuButton}"
+                                Text="Retiros"
+                                ImageSource="ic_inventario_idle.png">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroupList>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{StaticResource ItemIdle}"/>
+                                                <Setter Property="TextColor" Value="White"/>
+                                                <Setter Property="ImageSource" Value="ic_inventario_idle.png"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{StaticResource ItemPressed}"/>
+                                                <Setter Property="TextColor" Value="#1B1B1B"/>
+                                                <Setter Property="ImageSource" Value="ic_inventario_active.png"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateGroupList>
+                            </VisualStateManager.VisualStateGroups>
+                        </Button>
+
+                        <BoxView Style="{StaticResource Divider}"/>
+
+                        <!-- ABRIR/CERRAR TIENDA -->
+                        <Button x:Name="btnEstadoTienda"
+                                Style="{StaticResource MenuButton}"
+                                Text="Abrir tienda"
+                                ImageSource="ic_abrir_tienda_idle.png">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroupList>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{StaticResource ItemIdle}"/>
+                                                <Setter Property="TextColor" Value="White"/>
+                                                <Setter Property="ImageSource" Value="ic_abrir_tienda_idle.png"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{StaticResource ItemPressed}"/>
+                                                <Setter Property="TextColor" Value="#1B1B1B"/>
+                                                <Setter Property="ImageSource" Value="ic_abrir_tienda_active.png"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateGroupList>
+                            </VisualStateManager.VisualStateGroups>
+                        </Button>
+
+                        <BoxView Style="{StaticResource Divider}"/>
+
+                        <!-- CONFIGURACIÓN -->
+                        <Button x:Name="btnConfig"
+                                Style="{StaticResource MenuButton}"
+                                Text="Configuración"
+                                ImageSource="ic_configuracion_idle.png">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroupList>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{StaticResource ItemIdle}"/>
+                                                <Setter Property="TextColor" Value="White"/>
+                                                <Setter Property="ImageSource" Value="ic_configuracion_idle.png"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{StaticResource ItemPressed}"/>
+                                                <Setter Property="TextColor" Value="#1B1B1B"/>
+                                                <Setter Property="ImageSource" Value="ic_configuracion_active.png"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateGroupList>
+                            </VisualStateManager.VisualStateGroups>
+                        </Button>
+
+                        <!-- ACERCA -->
+                        <Button x:Name="btnAcerca"
+                                Style="{StaticResource MenuButton}"
+                                Text="Acerca de"
+                                ImageSource="ic_acerca_idle.png">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroupList>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{StaticResource ItemIdle}"/>
+                                                <Setter Property="TextColor" Value="White"/>
+                                                <Setter Property="ImageSource" Value="ic_acerca_idle.png"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{StaticResource ItemPressed}"/>
+                                                <Setter Property="TextColor" Value="#1B1B1B"/>
+                                                <Setter Property="ImageSource" Value="ic_acerca_active.png"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateGroupList>
+                            </VisualStateManager.VisualStateGroups>
+                        </Button>
+
+                        <BoxView Style="{StaticResource Divider}"/>
+
+                        <!-- CERRAR SESIÓN -->
+                        <Button x:Name="btnCerrarSesion"
+                                Style="{StaticResource MenuButton}"
+                                Text="Cerrar sesión"
+                                TextColor="#FF6B6B"
+                                ImageSource="ic_cerrar_sesion_idle.png">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroupList>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{StaticResource ItemIdle}"/>
+                                                <Setter Property="ImageSource" Value="ic_cerrar_sesion_idle.png"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="#2D2D2D"/>
+                                                <Setter Property="ImageSource" Value="ic_cerrar_sesion_active.png"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateGroupList>
+                            </VisualStateManager.VisualStateGroups>
+                        </Button>
+
+                    </VerticalStackLayout>
+                </ScrollView>
+
+                <BoxView Grid.Row="2" HeightRequest="4" Opacity="0"/>
             </Grid>
         </Border>
 

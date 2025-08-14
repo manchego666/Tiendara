@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="Tiendara.CapaVisual.Componentes.Portada.PortadaPerfilView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- Estilos locales -->
+    <ContentView.Resources>
+        <!-- Botón píldora amarillo -->
+        <Style x:Key="PillButton" TargetType="Button">
+            <Setter Property="HeightRequest" Value="44"/>
+            <Setter Property="CornerRadius" Value="24"/>
+            <Setter Property="Padding" Value="18,8"/>
+            <Setter Property="FontAttributes" Value="Bold"/>
+            <Setter Property="BackgroundColor" Value="#FFD166"/>
+            <Setter Property="TextColor" Value="#111111"/>
+            <Setter Property="Shadow">
+                <Setter.Value>
+                    <Shadow Brush="Black" Opacity="0.25" Radius="10" Offset="0,2"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Contadores -->
+        <Style x:Key="CounterLabel" TargetType="Label">
+            <Setter Property="TextColor" Value="#CCCCCC"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="HorizontalTextAlignment" Value="Center"/>
+        </Style>
+    </ContentView.Resources>
+
+    <!-- 3 filas: hero / marquesina / (contadores+botones) -->
+    <Grid RowDefinitions="Auto,60,Auto">
+
+        <!-- HERO 16:9 -->
+        <Grid x:Name="hero" Grid.Row="0" HeightRequest="220" SizeChanged="OnHeroSizeChanged">
+            <Image x:Name="imgTema"
+                   Source="portada_espacio.png"
+                   Aspect="AspectFill"
+                   HorizontalOptions="Fill"
+                   VerticalOptions="Fill"
+                   BackgroundColor="#000" />
+
+            <!-- Avatar + nombre (overlay abajo, centrado) -->
+            <VerticalStackLayout Spacing="8"
+                                 Padding="0,0,0,10"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="End">
+
+                <!-- Avatar 96 con chip de cámara -->
+                <Grid WidthRequest="96" HeightRequest="96">
+                    <Frame Padding="0" CornerRadius="999" HasShadow="False" BackgroundColor="#222">
+                        <Image x:Name="imgAvatar" Aspect="AspectFill" Source="avatar_default.png">
+                            <Image.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnAvatarTapped"/>
+                            </Image.GestureRecognizers>
+                        </Image>
+                    </Frame>
+
+                    <!-- Chip cámara -->
+                    <Frame Padding="5" CornerRadius="14"
+                           BackgroundColor="#1A1F2A"
+                           HasShadow="False"
+                           HorizontalOptions="End"
+                           VerticalOptions="End"
+                           Margin="0,0,2,2"
+                           ZIndex="5">
+                        <Image Source="ic_photo_active.png" WidthRequest="16" HeightRequest="16">
+                            <Image.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnChipFotoTapped"/>
+                            </Image.GestureRecognizers>
+                        </Image>
+                    </Frame>
+                </Grid>
+
+                <!-- Nombre y subtítulo -->
+                <Label x:Name="lblTitulo"
+                       Text="Tiendara Pro"
+                       FontSize="24"
+                       TextColor="White"
+                       FontAttributes="Bold"
+                       HorizontalTextAlignment="Center"/>
+                <Frame Padding="8,4"
+                       CornerRadius="12"
+                       BackgroundColor="#24262B"
+                       HasShadow="False"
+                       HorizontalOptions="Center">
+                    <Label x:Name="lblSubtitulo"
+                           Text="Dueño"
+                           TextColor="#FFD166"
+                           FontAttributes="Bold"
+                           FontSize="12"/>
+                </Frame>
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- MARQUESINA (fila independiente, 60px alto) -->
+        <Grid x:Name="franja"
+              Grid.Row="1"
+              BackgroundColor="#000"
+              SizeChanged="OnFranjaSizeChanged">
+
+            <!-- Overlay de LED/dots a los costados -->
+            <Image Source="marquee_grid.png"
+                   Aspect="Fill"
+                   Opacity="0.55"
+                   InputTransparent="True"/>
+
+            <!-- Texto desplazándose (glow rojo) -->
+            <Label x:Name="lblMarquee"
+                   Text="ZDEV · 2025 · TIENDARA+"
+                   TextColor="#FF3B3B"
+                   FontAttributes="Bold"
+                   FontSize="22"
+                   HorizontalOptions="Start"
+                   VerticalOptions="Center"
+                   InputTransparent="True" />
+
+            <!-- Clip para el scroll -->
+            <Grid.Clip>
+                <RectangleGeometry x:Name="marqueeClip"/>
+            </Grid.Clip>
+        </Grid>
+
+        <!-- CONTENIDO: contadores + botones -->
+        <VerticalStackLayout Grid.Row="2" Spacing="12" Padding="16,12">
+            <Grid ColumnDefinitions="*,*" HorizontalOptions="Center" WidthRequest="360">
+                <Label x:Name="lblContadorA" Grid.Column="0" Style="{StaticResource CounterLabel}" Text="Tiendas: 0"/>
+                <Label x:Name="lblContadorB" Grid.Column="1" Style="{StaticResource CounterLabel}" Text="Publicaciones: 0"/>
+            </Grid>
+
+            <HorizontalStackLayout Spacing="14" HorizontalOptions="Center">
+                <Button Text="Editar datos" Style="{StaticResource PillButton}" Clicked="OnEditarDatosClicked" WidthRequest="170"/>
+                <Button Text="Editar temas" Style="{StaticResource PillButton}" Clicked="OnEditarTemasClicked" WidthRequest="170"/>
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </Grid>
+</ContentView>

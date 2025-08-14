@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+  x:Class="Tiendara.CapaVisual.PaginasModulo.PerfilNegocioPage"
+  xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+  xmlns:portada="clr-namespace:Tiendara.CapaVisual.Componentes.Portada"
+  xmlns:nav="clr-namespace:Tiendara.CapaVisual.Componentes.Navegacion"
+  xmlns:comp="clr-namespace:Tiendara.CapaVisual.Componentes"
+  xmlns:pub="clr-namespace:Tiendara.CapaVisual.Componentes.Publicaciones"
+  Title="Negocio"
+  Shell.NavBarIsVisible="False"
+  NavigationPage.HasNavigationBar="False">
+
+    <Grid BackgroundColor="#0D0F15" RowDefinitions="Auto,*,Auto">
+
+        <!-- Portada/hero (modo TIENDA) -->
+        <portada:PortadaPerfilView x:Name="portada"
+                               Grid.Row="0"
+                               Modo="Tienda"
+                               Titulo="Mi Negocio"
+                               Subtitulo="Propietario"
+                               TemaId="Espacio"
+                               TiendasCount="0"
+                               NoticiasCount="0"
+                               EmpleadosCount="0" />
+
+        <!-- Feed de publicaciones de la tienda -->
+        <pub:PublicacionesView x:Name="pub"
+                           Grid.Row="1"
+                           Modo="Tienda"
+                           Margin="12,6,12,28"/>
+
+        <!-- Barra inferior -->
+        <nav:BarraNavegacionInferior x:Name="nav"
+                                 Grid.Row="2"
+                                 SelectedTab="Home"/>
+
+        <!-- Menú lateral -->
+        <comp:MenuLateralTiendara x:Name="menuLateral"
+                              Grid.RowSpan="3"/>
+
+        <!-- Botón monedita flotante -->
+        <comp:BotonMenuLateralView x:Name="btnMenu"
+                               Grid.RowSpan="3"
+                               HorizontalOptions="Start"
+                               VerticalOptions="Start"
+                               Margin="12,12,0,0"
+                               ZIndex="2000"/>
+    </Grid>
+</ContentPage>

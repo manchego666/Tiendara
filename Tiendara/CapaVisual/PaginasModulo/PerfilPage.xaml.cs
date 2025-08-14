@@ -1,52 +1,108 @@
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Media; // MediaPicker
+ï»¿using Microsoft.Maui.Controls;
+using Microsoft.Maui.Media;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Tiendara.CapaDatos.Repos;
+using Tiendara.CapaLogica.Servicios;
+using Tiendara.CapaVisual.Componentes.Portada;
+using Tiendara.CapaVisual.Componentes.Publicaciones;
 
 namespace Tiendara.CapaVisual.PaginasModulo;
 
 public partial class PerfilPage : ContentPage
 {
-    // Simulación de usuario actual (cuando tenga mi modelo, bindeo real)
-    private string _personaId = "USR-001";
-    private string? _fotoLocalPath;
+    private readonly INegocioRepo _negocios = new NegocioRepo();
+    private readonly IUsuarioRepo _usuarios = new UsuarioRepo();
 
     public PerfilPage()
     {
         InitializeComponent();
 
-        // Placeholders visibles
-        lblNombre.Text = "Tiendara Pro";
-        lblRol.Text = "Dueño";
-        lblEmpleados.Text = "Empleados: 0";
-        lblTiendas.Text = "Tiendas: 0";
+        // Barra inferior
+        nav.HomeClicked += async (_, __) =>
+            await DisplayAlert("ZDEV - 2025", "Ya estÃ¡s en Perfil.", "OK");
+        // nav.WorldClicked / nav.ChatClicked / nav.BellClicked segÃºn necesites
+
+        // MenÃº lateral
+        btnMenu.Clicked += async (_, __) => await menuLateral.ToggleMenu();
+
+        // Portada (eventos)
+        portada.VerFotoSolicitado += async (_, __) => await VerFotoAsync();
+        portada.CambiarFotoSolicitado += async (_, __) => await CambiarFotoAsync();
+        portada.EditarDatosClicked += async (_, __) =>
+            await DisplayAlert("ZDEV - 2025", "Editar datos (en desarrollo).", "OK");
+        portada.EditarTemasClicked += async (_, __) =>
+            await DisplayAlert("ZDEV - 2025", "Editar temas (en desarrollo).", "OK");
+
+        // Feed (eventos)
+        pub.CommentRequested += OnPubCommentRequested;
+        pub.ContactRequested += OnPubContactRequested;
+        pub.ProfileRequested += OnPubProfileRequested;
     }
 
-    // Tap en la imagen: ver a pantalla completa con opción de cerrar
-    private async void OnAvatarTapped(object sender, EventArgs e)
+    protected override async void OnAppearing()
     {
-        var img = new Image
-        {
-            Aspect = Aspect.AspectFit,
-            Source = imgAvatar.Source,
-            BackgroundColor = Colors.Black
-        };
+        base.OnAppearing();
+        await SincronizarConSesionAsync();
+    }
 
+    private async Task SincronizarConSesionAsync()
+    {
+        var u = SesionActual.Usuario;
+        if (u == null)
+        {
+            await DisplayAlert("SesiÃ³n", "No hay sesiÃ³n activa. Inicia sesiÃ³n de nuevo.", "OK");
+            return;
+        }
+
+        // Portada
+        portada.Titulo = (u.Nombre ?? string.Empty).Trim();
+        portada.Subtitulo = string.IsNullOrWhiteSpace(u.Email) ? "Usuario Tiendara+" : u.Email;
+        portada.FotoPath = (!string.IsNullOrWhiteSpace(u.Foto) && File.Exists(u.Foto)) ? u.Foto : null;
+
+        try
+        {
+            var tiendas = await _negocios.ListByUsuarioAsync(u.Id);
+            portada.TiendasCount = tiendas?.Count ?? 0;
+        }
+        catch { portada.TiendasCount = 0; }
+        portada.NoticiasCount = 0;
+
+        // Feed (identidad)
+        pub.Modo = PublicacionesModo.Usuario;
+        pub.AutorId = u.Id;
+        pub.AutorNombre = u.Nombre ?? "Usuario";
+        pub.TiendaId = null;
+        pub.TiendaNombre = null;
+    }
+
+    // ===== Acciones del feed =====
+    private async void OnPubCommentRequested(object? sender, PublicacionItem item)
+        => await DisplayAlert("Comentar", $"Comentar publicaciÃ³n de {item.AutorLinea}", "OK");
+
+    private async void OnPubContactRequested(object? sender, PublicacionItem item)
+        => await DisplayAlert("Contactar", $"Abrir chat con {item.AutorLinea}", "OK");
+
+    private async void OnPubProfileRequested(object? sender, PublicacionItem item)
+        => await DisplayAlert("Perfil", $"Ir al perfil de {item.AutorLinea}", "OK");
+
+    // ===== Foto de perfil =====
+    private async Task VerFotoAsync()
+    {
+        var src = (!string.IsNullOrWhiteSpace(portada.FotoPath) && File.Exists(portada.FotoPath))
+            ? ImageSource.FromFile(portada.FotoPath)
+            : ImageSource.FromFile("avatar_default.png");
+
+        var img = new Image { Aspect = Aspect.AspectFit, Source = src, BackgroundColor = Colors.Black };
         var viewer = new ContentPage
         {
             Title = "Foto de perfil",
             BackgroundColor = Colors.Black,
             Content = new Grid { Children = { img } }
         };
-
-        // Cerrar desde toolbar
         viewer.ToolbarItems.Add(new ToolbarItem("Cerrar", null, async () => await Navigation.PopModalAsync()));
-        // Cerrar tocando la imagen
-        img.GestureRecognizers.Add(new TapGestureRecognizer
-        {
-            Command = new Command(async () => await Navigation.PopModalAsync())
-        });
+        img.GestureRecognizers.Add(new TapGestureRecognizer { Command = new Command(async () => await Navigation.PopModalAsync()) });
 
         await Navigation.PushModalAsync(new NavigationPage(viewer)
         {
@@ -55,85 +111,50 @@ public partial class PerfilPage : ContentPage
         });
     }
 
-    // Chip 'Foto': elegir cámara o galería
-    private async void OnFotoChipTapped(object sender, EventArgs e)
+    private async Task CambiarFotoAsync()
     {
-        var action = await DisplayActionSheet("Foto de perfil", "Cancelar", null, "Desde cámara", "Desde galería");
-        if (action == "Desde cámara")
+        if (!await Tiendara.CapaVisual.Utils.Permisos.EnsureFotoAsync())
         {
-            await TomarFotoAsync();
+            await DisplayAlert("Permisos", "Necesito acceso a cÃ¡mara y fotos.", "OK");
+            return;
         }
-        else if (action == "Desde galería")
-        {
-            await CambiarFotoDesdeGaleriaAsync();
-        }
-    }
 
-    private async Task TomarFotoAsync()
-    {
+        var action = await DisplayActionSheet("Foto de perfil", "Cancelar", null, "Desde cÃ¡mara", "Desde galerÃ­a");
         try
         {
-            var photo = await MediaPicker.CapturePhotoAsync();
-            if (photo == null) return;
-            await GuardarYActualizarAsync(photo);
-        }
-        catch (FeatureNotSupportedException)
-        {
-            await DisplayAlert("Cámara", "Este dispositivo no soporta cámara.", "OK");
-        }
-        catch (PermissionException)
-        {
-            await DisplayAlert("Permisos", "Concede permiso de cámara/almacenamiento.", "OK");
+            FileResult? fr = action switch
+            {
+                "Desde cÃ¡mara" => await MediaPicker.CapturePhotoAsync(),
+                "Desde galerÃ­a" => await MediaPicker.PickPhotoAsync(),
+                _ => null
+            };
+            if (fr == null) return;
+
+            var u = SesionActual.Usuario;
+            if (u == null)
+            {
+                await DisplayAlert("SesiÃ³n", "Sin sesiÃ³n activa.", "OK");
+                return;
+            }
+
+            var dir = FileSystem.AppDataDirectory;
+            var filename = $"avatar_{u.Id}.jpg";
+            var dest = Path.Combine(dir, filename);
+
+            using (var src = await fr.OpenReadAsync())
+            using (var dst = File.Create(dest))
+                await src.CopyToAsync(dst);
+
+            portada.FotoPath = dest;
+
+            u.Foto = dest;
+            await _usuarios.UpdateAsync(u);
+
+            await DisplayAlert("Perfil", "Foto actualizada.", "OK");
         }
         catch (Exception ex)
         {
             await DisplayAlert("Error", ex.Message, "OK");
         }
-    }
-
-    private async Task CambiarFotoDesdeGaleriaAsync()
-    {
-        try
-        {
-            var file = await MediaPicker.PickPhotoAsync();
-            if (file == null) return;
-            await GuardarYActualizarAsync(file);
-        }
-        catch (FeatureNotSupportedException)
-        {
-            await DisplayAlert("Galería", "Este dispositivo no soporta selección de fotos.", "OK");
-        }
-        catch (PermissionException)
-        {
-            await DisplayAlert("Permisos", "Concede permiso para acceder a fotos/almacenamiento.", "OK");
-        }
-        catch (Exception ex)
-        {
-            await DisplayAlert("Error", ex.Message, "OK");
-        }
-    }
-
-    private async Task GuardarYActualizarAsync(FileResult file)
-    {
-        var dir = FileSystem.AppDataDirectory; // sandbox de la app (no va al repo)
-        var filename = $"avatar_{_personaId}.jpg";
-        var dest = Path.Combine(dir, filename);
-
-        using (var src = await file.OpenReadAsync())
-        using (var dst = File.Create(dest))
-            await src.CopyToAsync(dst);
-
-        _fotoLocalPath = dest;
-
-        // Forzar refresco sin caché
-        imgAvatar.Source = null;
-        await Task.Delay(10);
-        imgAvatar.Source = ImageSource.FromStream(() => File.OpenRead(dest));
-    }
-
-    private async void OnEditarClicked(object sender, EventArgs e)
-    {
-        await DisplayAlert("Perfil", "Aquí irá 'EditarPerfil' (próximamente).", "OK");
-        // Futuro: await Navigation.PushAsync(new EditarPerfilPage());
     }
 }

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Tiendara.CapaVisual.PaginasModulo.InventarioPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:nav="clr-namespace:Tiendara.CapaVisual.Componentes.Navegacion"
+    xmlns:comp="clr-namespace:Tiendara.CapaVisual.Componentes"
+    Title="Inventario"
+    Shell.NavBarIsVisible="False"
+    NavigationPage.HasNavigationBar="False">
+
+    <Grid RowDefinitions="Auto,*,Auto" Padding="12" BackgroundColor="#1b1b1b">
+
+        <!-- Encabezado -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Padding="0,0,0,8">
+            <Label Text="Inventario" FontSize="24" FontAttributes="Bold" VerticalOptions="Center"/>
+            <Button Grid.Column="1" Text="Refrescar" Clicked="OnRefreshClicked"/>
+        </Grid>
+
+        <!-- Formulario + lista -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="12">
+
+                <!-- Entrada -->
+                <Frame Padding="12" HasShadow="True" BackgroundColor="#222" BorderColor="#333">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Registrar entrada" TextColor="#FFD166" FontAttributes="Bold"/>
+                        <Entry x:Name="txtNegocioIdE" Placeholder="NegocioId (Guid o vacío = general)" TextColor="Black"/>
+                        <Entry x:Name="txtProductoIdE" Placeholder="ProductoId (Guid)" TextColor="Black"/>
+                        <Entry x:Name="txtCantidadE" Placeholder="Cantidad" Keyboard="Numeric" TextColor="Black"/>
+                        <Entry x:Name="txtCostoE" Placeholder="Costo unitario" Keyboard="Numeric" TextColor="Black"/>
+                        <Entry x:Name="txtRefE" Placeholder="Referencia (opcional)" TextColor="Black"/>
+                        <Button Text="Guardar entrada" Clicked="OnEntradaClicked"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Salida -->
+                <Frame Padding="12" HasShadow="True" BackgroundColor="#222" BorderColor="#333">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Registrar salida" TextColor="#FFD166" FontAttributes="Bold"/>
+                        <Entry x:Name="txtNegocioIdS" Placeholder="NegocioId (Guid o vacío = general)" TextColor="Black"/>
+                        <Entry x:Name="txtProductoIdS" Placeholder="ProductoId (Guid)" TextColor="Black"/>
+                        <Entry x:Name="txtCantidadS" Placeholder="Cantidad" Keyboard="Numeric" TextColor="Black"/>
+                        <Entry x:Name="txtRefS" Placeholder="Referencia (opcional)" TextColor="Black"/>
+                        <Button Text="Guardar salida" Clicked="OnSalidaClicked"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Ajuste -->
+                <Frame Padding="12" HasShadow="True" BackgroundColor="#222" BorderColor="#333">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Ajuste de inventario" TextColor="#FFD166" FontAttributes="Bold"/>
+                        <Entry x:Name="txtNegocioIdA" Placeholder="NegocioId (Guid o vacío = general)" TextColor="Black"/>
+                        <Entry x:Name="txtProductoIdA" Placeholder="ProductoId (Guid)" TextColor="Black"/>
+                        <Entry x:Name="txtAjusteA" Placeholder="Ajuste (+/-)" Keyboard="Numeric" TextColor="Black"/>
+                        <Entry x:Name="txtMotivoA" Placeholder="Motivo" TextColor="Black"/>
+                        <Button Text="Aplicar ajuste" Clicked="OnAjusteClicked"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Barra inferior + menú lateral -->
+        <nav:BarraNavegacionInferior Grid.Row="2" x:Name="nav" Activo="Inventario"/>
+        <comp:MenuLateralTiendara x:Name="menuLateral" Grid.RowSpan="3" InputTransparent="True"/>
+    </Grid>
+</ContentPage>

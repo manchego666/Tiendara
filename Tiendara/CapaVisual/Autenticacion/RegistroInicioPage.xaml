@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+  x:Class="Tiendara.CapaVisual.Autenticacion.RegistroInicioPage"
+  xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+  xmlns:comp="clr-namespace:Tiendara.CapaVisual.Componentes.Login"
+  Shell.NavBarIsVisible="False"
+  BackgroundColor="#0D0F15">
+
+    <AbsoluteLayout>
+
+        <!-- Fondo FULLSCREEN estirado (siempre cubre todo) -->
+        <Image Source="fondo_registro2.png"
+           Aspect="Fill"
+           InputTransparent="True"
+           AbsoluteLayout.LayoutBounds="0,0,1,1"
+           AbsoluteLayout.LayoutFlags="All" />
+
+        <!-- Moneda encima, centrada -->
+        <comp:MonedaLoginView
+           AbsoluteLayout.LayoutBounds="0.5,0.5,-1,-1"
+           AbsoluteLayout.LayoutFlags="PositionProportional" />
+
+    </AbsoluteLayout>
+</ContentPage>

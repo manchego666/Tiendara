@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Tiendara.CapaVisual.PaginasModulo.HomePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:nav="clr-namespace:Tiendara.CapaVisual.Componentes.Navegacion"
+    xmlns:comp="clr-namespace:Tiendara.CapaVisual.Componentes"
+    Title="Home"
+    Shell.NavBarIsVisible="False"
+    BackgroundColor="#121212">
+
+    <!-- 2 filas: contenido / barra inferior -->
+    <Grid RowDefinitions="*,Auto">
+
+
+        <!-- BARRA INFERIOR (como la tuya) -->
+        <nav:BarraNavegacionInferior x:Name="nav" Grid.Row="1" Activo="Home"/>
+
+        <!-- OVERLAY DEL MENÚ (no tapa cuando está cerrado) -->
+        <comp:MenuLateralTiendara x:Name="menuLateral" Grid.RowSpan="2"/>
+
+        <!-- MONEDITA FUERA DEL OVERLAY -->
+        <comp:BotonMenuLateralView x:Name="btnMenu"
+                                   Grid.RowSpan="2"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Start"
+                                   Margin="14,14,0,0"
+                                   ZIndex="2000"/>
+    </Grid>
+</ContentPage>

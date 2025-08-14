@@ -1,16 +1,11 @@
-﻿namespace Tiendara
-{
-    public partial class AppShell : Shell
-    {
-        public AppShell()
-        {
-            InitializeComponent();
+﻿namespace Tiendara;
 
-            Routing.RegisterRoute("inventario", typeof(InventarioPage));
-            Routing.RegisterRoute("venta", typeof(VentaPage));
-            Routing.RegisterRoute("corte", typeof(CorteCajaPage));
-            Routing.RegisterRoute("empleados", typeof(EmpleadosPage));
-            Routing.RegisterRoute("proveedores", typeof(ProveedoresPage));
-        }
+public partial class AppShell : Shell
+{
+    public AppShell()
+    {
+        InitializeComponent();
+        // Aquí podrías registrar rutas cuando existan las páginas reales:
+        // Routing.RegisterRoute(nameof(CapaVisual.PaginasModulo.HomePage), typeof(CapaVisual.PaginasModulo.HomePage));
     }
 }

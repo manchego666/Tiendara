@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="Tiendara.CapaVisual.Componentes.Navegacion.BarraNavegacionInferior"
+    x:Name="Root"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <ContentView.Resources>
+        <!-- Icono base -->
+        <Style TargetType="Image" x:Key="IconStyle">
+            <Setter Property="WidthRequest" Value="26"/>
+            <Setter Property="HeightRequest" Value="26"/>
+            <Setter Property="HorizontalOptions" Value="Center"/>
+            <Setter Property="VerticalOptions" Value="Center"/>
+            <Setter Property="Aspect" Value="AspectFit"/>
+            <Setter Property="InputTransparent" Value="True"/>
+        </Style>
+
+        <!-- Puntito indicador (blanco en oscuro / negro en claro) -->
+        <Style TargetType="BoxView" x:Key="DotStyle">
+            <Setter Property="WidthRequest" Value="18"/>
+            <Setter Property="HeightRequest" Value="3"/>
+            <Setter Property="CornerRadius" Value="2"/>
+            <Setter Property="HorizontalOptions" Value="Center"/>
+            <Setter Property="VerticalOptions" Value="Center"/>
+            <Setter Property="Opacity" Value="0"/>
+            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#111111, Dark=#FFFFFF}"/>
+            <Setter Property="InputTransparent" Value="True"/>
+        </Style>
+
+        <!-- Badge (contador) -->
+        <Style TargetType="Frame" x:Key="BadgeStyle">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HasShadow" Value="False"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BackgroundColor" Value="#FF3B30"/>
+            <Setter Property="BorderColor" Value="#FF3B30"/>
+            <Setter Property="HeightRequest" Value="16"/>
+            <Setter Property="MinimumWidthRequest" Value="16"/>
+            <Setter Property="HorizontalOptions" Value="End"/>
+            <Setter Property="VerticalOptions" Value="Start"/>
+            <Setter Property="IsVisible" Value="False"/>
+            <Setter Property="InputTransparent" Value="True"/>
+        </Style>
+        <Style TargetType="Label" x:Key="BadgeLabelStyle">
+            <Setter Property="TextColor" Value="White"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="HorizontalTextAlignment" Value="Center"/>
+            <Setter Property="VerticalTextAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="3,0,3,0"/>
+            <Setter Property="InputTransparent" Value="True"/>
+        </Style>
+    </ContentView.Resources>
+
+    <!-- Overlay anclado abajo -->
+    <Grid x:Name="OverlayHost"
+          HorizontalOptions="Fill"
+          VerticalOptions="End"
+          InputTransparent="False"
+          Padding="0" Margin="0" ZIndex="10">
+
+        <!-- Píldora flotante (NO full width) -->
+        <Border x:Name="Pill"
+                HorizontalOptions="Center"
+                VerticalOptions="End"
+                Margin="12,0,12,16"
+                Padding="{OnPlatform iOS='16,10,16,18', Android='16,10,16,12', WinUI='16,10,16,12'}"
+                MaximumWidthRequest="{Binding Source={x:Reference Root}, Path=PillMaxWidth}"
+                MinimumWidthRequest="260"
+                BackgroundColor="{AppThemeBinding Light=#F2FFFFFF, Dark=#CC0B0B0C}"
+                InputTransparent="False">
+
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="28"/>
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="Black" Opacity="0.15" Radius="12" Offset="0,6"/>
+            </Border.Shadow>
+
+            <!-- 4 columnas -->
+            <Grid ColumnSpacing="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- HOME -->
+                <Grid Grid.Column="0">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnHomeTapped"/>
+                    </Grid.GestureRecognizers>
+                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto">
+                        <Grid>
+                            <Image x:Name="imgHome" Style="{StaticResource IconStyle}" Source="ic_home_idle.png"/>
+                            <Frame x:Name="badgeHome" Style="{StaticResource BadgeStyle}" Margin="14,-6,0,0">
+                                <Label x:Name="lblBadgeHome" Style="{StaticResource BadgeLabelStyle}" Text="0"/>
+                            </Frame>
+                        </Grid>
+                        <BoxView x:Name="dotHome" Grid.Row="1" Style="{StaticResource DotStyle}"/>
+                    </Grid>
+                </Grid>
+
+                <!-- WORLD -->
+                <Grid Grid.Column="1">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnWorldTapped"/>
+                    </Grid.GestureRecognizers>
+                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto">
+                        <Grid>
+                            <Image x:Name="imgWorld" Style="{StaticResource IconStyle}" Source="ic_world_idle.png"/>
+                            <Frame x:Name="badgeWorld" Style="{StaticResource BadgeStyle}" Margin="14,-6,0,0">
+                                <Label x:Name="lblBadgeWorld" Style="{StaticResource BadgeLabelStyle}" Text="0"/>
+                            </Frame>
+                        </Grid>
+                        <BoxView x:Name="dotWorld" Grid.Row="1" Style="{StaticResource DotStyle}"/>
+                    </Grid>
+                </Grid>
+
+                <!-- CHAT -->
+                <Grid Grid.Column="2">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnChatTapped"/>
+                    </Grid.GestureRecognizers>
+                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto">
+                        <Grid>
+                            <Image x:Name="imgChat" Style="{StaticResource IconStyle}" Source="ic_chat_idle.png"/>
+                            <Frame x:Name="badgeChat" Style="{StaticResource BadgeStyle}" Margin="14,-6,0,0">
+                                <Label x:Name="lblBadgeChat" Style="{StaticResource BadgeLabelStyle}" Text="0"/>
+                            </Frame>
+                        </Grid>
+                        <BoxView x:Name="dotChat" Grid.Row="1" Style="{StaticResource DotStyle}"/>
+                    </Grid>
+                </Grid>
+
+                <!-- BELL -->
+                <Grid Grid.Column="3">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnBellTapped"/>
+                    </Grid.GestureRecognizers>
+                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto">
+                        <Grid>
+                            <Image x:Name="imgBell" Style="{StaticResource IconStyle}" Source="ic_bell_idle.png"/>
+                            <Frame x:Name="badgeBell" Style="{StaticResource BadgeStyle}" Margin="14,-6,0,0">
+                                <Label x:Name="lblBadgeBell" Style="{StaticResource BadgeLabelStyle}" Text="0"/>
+                            </Frame>
+                        </Grid>
+                        <BoxView x:Name="dotBell" Grid.Row="1" Style="{StaticResource DotStyle}"/>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</ContentView>

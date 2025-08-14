@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Tiendara.CapaVisual.PaginasModulo.RetirosPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:nav="clr-namespace:Tiendara.CapaVisual.Componentes.Navegacion"
+    xmlns:comp="clr-namespace:Tiendara.CapaVisual.Componentes"
+    Title="Retiros"
+    Shell.NavBarIsVisible="False"
+    NavigationPage.HasNavigationBar="False">
+
+    <Grid BackgroundColor="#1b1b1b" RowDefinitions="Auto,*,Auto" Padding="12">
+
+        <!-- Encabezado -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Padding="0,0,0,8">
+            <Label Text="Retiros" FontSize="24" FontAttributes="Bold" VerticalOptions="Center"/>
+            <Button Grid.Column="1" Text="Reset (sandbox)" Clicked="OnResetSandboxClicked"/>
+        </Grid>
+
+        <!-- Formulario + lista -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="12">
+
+                <!-- Formulario -->
+                <Frame Padding="12" HasShadow="True" BackgroundColor="#222" BorderColor="#333">
+                    <VerticalStackLayout Spacing="10">
+                        <Picker x:Name="pickNegocio" Title="Selecciona negocio (o Caja general)"/>
+                        <Entry  x:Name="txtMonto" Placeholder="$ Monto" Keyboard="Numeric"/>
+                        <Entry  x:Name="txtMotivo" Placeholder="Motivo (p. ej.: compra insumos, desayuno)"/>
+                        <Entry  x:Name="txtReferencia" Placeholder="Referencia (opcional)"/>
+                        <Button Text="Registrar retiro" Clicked="OnRegistrarClicked" />
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Acumulados del día -->
+                <Frame Padding="12" HasShadow="True" BackgroundColor="#222" BorderColor="#333">
+                    <Grid ColumnDefinitions="*,*" >
+                        <VerticalStackLayout>
+                            <Label Text="Retiros hoy" TextColor="#bbb" FontSize="12"/>
+                            <Label x:Name="lblRetirosHoy" Text="$0.00" TextColor="White" FontAttributes="Bold"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Total histórico" TextColor="#bbb" FontSize="12"/>
+                            <Label x:Name="lblRetirosTotal" Text="$0.00" TextColor="White" FontAttributes="Bold"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Frame>
+
+                <!-- Lista de retiros -->
+                <CollectionView x:Name="lista" ItemsSource="{Binding Items}">
+                    <CollectionView.EmptyView>
+                        <VerticalStackLayout Padding="24" Spacing="6">
+                            <Label Text="Aún no hay retiros." TextColor="#999" HorizontalOptions="Center"/>
+                            <Label Text="Captura uno arriba." TextColor="#666" FontSize="12" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </CollectionView.EmptyView>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame Margin="0,6" Padding="12" HasShadow="True" BackgroundColor="#222" BorderColor="#333">
+                                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                                    <Label Grid.Row="0" Grid.Column="0"
+                                           Text="{Binding NegocioNombre}" TextColor="#FFD166" FontAttributes="Bold"/>
+                                    <Label Grid.Row="0" Grid.Column="1"
+                                           Text="{Binding MontoTexto}" TextColor="White" FontAttributes="Bold"/>
+
+                                    <Label Grid.Row="1" Grid.Column="0"
+                                           Text="{Binding Detalle}" TextColor="#ccc"/>
+                                    <Label Grid.Row="1" Grid.Column="1"
+                                           Text="{Binding FechaCorta}" TextColor="#aaa" HorizontalTextAlignment="End"/>
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Barra inferior + menú lateral -->
+        <nav:BarraNavegacionInferior Grid.Row="2" x:Name="nav" Activo="Home"/>
+        <comp:MenuLateralTiendara x:Name="menuLateral" Grid.RowSpan="3" InputTransparent="True"/>
+    </Grid>
+</ContentPage>
