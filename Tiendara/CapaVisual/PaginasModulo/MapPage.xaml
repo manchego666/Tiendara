@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Tiendara.CapaVisual.PaginasModulo.MapPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:nav="clr-namespace:Tiendara.CapaVisual.Componentes.Navegacion"
+    xmlns:comp="clr-namespace:Tiendara.CapaVisual.Componentes"
+    Shell.NavBarIsVisible="False"
+    BackgroundColor="#0D0F15">
+
+    <Grid RowDefinitions="*,Auto">
+        <!-- MAPA -->
+        <WebView x:Name="mapWeb" Grid.Row="0"/>
+
+        <!-- FABs: ahora NO cubren toda la pantalla (no bloquean pinch/drag) -->
+        <HorizontalStackLayout Grid.Row="0"
+                               HorizontalOptions="End"
+                               VerticalOptions="End"
+                               Spacing="12"
+                               Margin="16">
+
+            <!-- Mi ubicación -->
+            <Border Padding="8" BackgroundColor="#F2FFFFFF" StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16"/>
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Opacity="0.15" Radius="12" Offset="0,6"/>
+                </Border.Shadow>
+                <ImageButton x:Name="btnMyLocation"
+                             Source="gps_on.png"
+                             BackgroundColor="Transparent"
+                             WidthRequest="48" HeightRequest="48"
+                             Clicked="OnMyLocationClicked"/>
+            </Border>
+
+            <!-- Agregar tienda -->
+            <Border Padding="8" BackgroundColor="#F2FFFFFF" StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16"/>
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Opacity="0.15" Radius="12" Offset="0,6"/>
+                </Border.Shadow>
+                <ImageButton x:Name="btnAddStore"
+                             Source="ic_abrir_tienda_active.png"
+                             BackgroundColor="Transparent"
+                             WidthRequest="48" HeightRequest="48"
+                             Clicked="OnAddStoreClicked"/>
+            </Border>
+        </HorizontalStackLayout>
+
+        <!-- Menú lateral -->
+        <comp:MenuLateralTiendara x:Name="menuLateral" Grid.RowSpan="2" ZIndex="1500"/>
+
+        <!-- Barra inferior -->
+        <nav:BarraNavegacionInferior x:Name="nav" Grid.Row="1" Activo="world"/>
+
+        <!-- Botón para abrir el menú -->
+        <comp:BotonMenuLateralView x:Name="btnMenu"
+                                   Grid.RowSpan="2"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Start"
+                                   Margin="14,14,0,0"
+                                   ZIndex="2000"/>
+    </Grid>
+</ContentPage>

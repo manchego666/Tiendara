@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Tiendara.CapaVisual.PaginasModulo.ChatListPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:nav="clr-namespace:Tiendara.CapaVisual.Componentes.Navegacion"
+    xmlns:comp="clr-namespace:Tiendara.CapaVisual.Componentes"
+    Shell.NavBarIsVisible="False"
+    BackgroundColor="#0D0F15">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <!-- Fondo -->
+        <Grid>
+            <Image Source="tiendara_chat_bg.png"
+                   Aspect="AspectFill"
+                   InputTransparent="True"/>
+            <!-- velo sutil -->
+            <BoxView BackgroundColor="#1A000000" />
+        </Grid>
+
+        <!-- Contenido -->
+        <Grid Padding="16" RowDefinitions="Auto,*" ColumnDefinitions="*">
+
+            <!-- search / header -->
+            <Border Grid.Row="0"
+                    BackgroundColor="#F2FFFFFF"
+                    StrokeThickness="0"
+                    Padding="12"
+                    MaximumWidthRequest="{OnIdiom Phone=760, Tablet=900, Desktop=980}"
+                    HorizontalOptions="Center">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="18"/>
+                </Border.StrokeShape>
+                <Grid ColumnDefinitions="Auto,*">
+                    <Image Source="ic_search.png" WidthRequest="18" HeightRequest="18" Margin="0,0,8,0"/>
+                    <Label Grid.Column="1" Text="Buscar o iniciar chat"
+                           TextColor="#444" />
+                </Grid>
+            </Border>
+
+            <!-- lista -->
+            <CollectionView Grid.Row="1"
+                            x:Name="lst"
+                            ItemsSource="{Binding Items}"
+                            SelectionMode="Single"
+                            SelectionChanged="OnSelect"
+                            Margin="0,12,0,0">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border BackgroundColor="#CC14161A"
+                                StrokeThickness="0"
+                                Padding="12">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="18"/>
+                            </Border.StrokeShape>
+
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                <Frame CornerRadius="999" Padding="0" HasShadow="False" HeightRequest="42" WidthRequest="42" BackgroundColor="#2A2A2A">
+                                    <Image Source="{Binding Avatar}" Aspect="AspectFill"/>
+                                </Frame>
+
+                                <VerticalStackLayout Spacing="2">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Label Text="{Binding Title}" TextColor="White" FontAttributes="Bold"/>
+                                        <Label Grid.Column="1" Text="{Binding Time}" TextColor="#CFCFCF" FontSize="11"/>
+                                    </Grid>
+                                    <Label Text="{Binding Last}" TextColor="#E0E0E0" LineBreakMode="TailTruncation" MaxLines="1"/>
+                                </VerticalStackLayout>
+
+                                <Frame Grid.Column="2"
+                                       Padding="0"
+                                       HasShadow="False"
+                                       BackgroundColor="#FF3B30"
+                                       CornerRadius="10"
+                                       HeightRequest="18"
+                                       MinimumWidthRequest="18"
+                                       IsVisible="{Binding Unread, Converter={StaticResource BoolToVisibleConverter}}">
+                                    <Label Text="{Binding Unread}"
+                                           TextColor="White"
+                                           FontSize="10"
+                                           HorizontalTextAlignment="Center"
+                                           VerticalTextAlignment="Center"
+                                           Margin="3,0"/>
+                                </Frame>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+
+        <!-- Menú lateral -->
+        <comp:MenuLateralTiendara x:Name="menuLateral" Grid.RowSpan="2" ZIndex="1500"/>
+
+        <!-- Barra inferior -->
+        <nav:BarraNavegacionInferior x:Name="nav" Grid.Row="1" Activo="chat"/>
+
+        <!-- Botón menú -->
+        <comp:BotonMenuLateralView x:Name="btnMenu"
+                                   Grid.RowSpan="2"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Start"
+                                   Margin="14,14,0,0"
+                                   ZIndex="2000"/>
+    </Grid>
+</ContentPage>

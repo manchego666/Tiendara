@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Tiendara.CapaVisual.PaginasModulo.ChatThreadPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:nav="clr-namespace:Tiendara.CapaVisual.Componentes.Navegacion"
+    xmlns:comp="clr-namespace:Tiendara.CapaVisual.Componentes"
+    Shell.NavBarIsVisible="False"
+    BackgroundColor="#0D0F15">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <!-- Fondo -->
+        <Grid>
+            <Image Source="tiendara_chat_bg.png" Aspect="AspectFill"/>
+            <BoxView BackgroundColor="#24000000"/>
+        </Grid>
+
+        <!-- Contenido -->
+        <Grid RowDefinitions="Auto,*,Auto" Padding="12">
+
+            <!-- Header -->
+            <Border Grid.Row="0" Padding="10" BackgroundColor="#F2FFFFFF" StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16"/>
+                </Border.StrokeShape>
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                    <Frame CornerRadius="999" Padding="0" HasShadow="False" HeightRequest="36" WidthRequest="36" BackgroundColor="#2A2A2A">
+                        <Image Source="avatar_default.png" Aspect="AspectFill"/>
+                    </Frame>
+                    <VerticalStackLayout Spacing="0">
+                        <Label x:Name="lblTitle" Text="Chat" FontAttributes="Bold" TextColor="#111"/>
+                        <Label Text="🟢 Abierta" FontSize="11" TextColor="#444"/>
+                    </VerticalStackLayout>
+                    <Button Grid.Column="2" Text="Perfil" Clicked="OnOpenProfile"/>
+                </Grid>
+            </Border>
+
+            <!-- Lista de mensajes -->
+            <CollectionView Grid.Row="1"
+                            x:Name="msgs"
+                            ItemsSource="{Binding Messages}"
+                            ItemSizingStrategy="MeasureAllItems"
+                            Margin="0,10">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="8"/>
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid ColumnDefinitions="*,Auto,*">
+
+                            <!-- Burbuja izquierda (otro) -->
+                            <Border Grid.Column="0"
+                                    BackgroundColor="#F2FFFFFF"
+                                    StrokeThickness="0"
+                                    Padding="10"
+                                    MaximumWidthRequest="520">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="18"/>
+                                </Border.StrokeShape>
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsMe}" Value="True">
+                                        <Setter Property="IsVisible" Value="False"/>
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="{Binding Text}" TextColor="#111"/>
+                                    <Label Text="{Binding Time}" TextColor="#666" FontSize="10" HorizontalOptions="End"/>
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <!-- Burbuja derecha (yo) -->
+                            <Border Grid.Column="2"
+                                    BackgroundColor="#CC14161A"
+                                    StrokeThickness="0"
+                                    Padding="10"
+                                    MaximumWidthRequest="520">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="18"/>
+                                </Border.StrokeShape>
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsMe}" Value="False">
+                                        <Setter Property="IsVisible" Value="False"/>
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="{Binding Text}" TextColor="White"/>
+                                    <Label Text="{Binding Time}" TextColor="#E0E0E0" FontSize="10" HorizontalOptions="End"/>
+                                </VerticalStackLayout>
+                            </Border>
+
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Composer -->
+            <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,0,0,6">
+                <Border StrokeThickness="0" BackgroundColor="#3314161A">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16"/>
+                    </Border.StrokeShape>
+                    <Entry x:Name="txt"
+                           Placeholder="Escribe un mensaje…"
+                           TextColor="White"
+                           PlaceholderColor="#B0B0B0"
+                           BackgroundColor="Transparent"
+                           HeightRequest="44"/>
+                </Border>
+                <Button Grid.Column="1" Text="Enviar" Clicked="OnSend"/>
+            </Grid>
+        </Grid>
+
+        <!-- (Opcional) menú lateral y barra inferior -->
+        <comp:MenuLateralTiendara x:Name="menuLateral" Grid.RowSpan="2" ZIndex="1500"/>
+        <nav:BarraNavegacionInferior x:Name="nav" Grid.Row="1" Activo="chat"/>
+        <comp:BotonMenuLateralView x:Name="btnMenu"
+                                   Grid.RowSpan="2"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Start"
+                                   Margin="14,14,0,0"
+                                   ZIndex="2000"/>
+    </Grid>
+</ContentPage>

@@ -144,12 +144,36 @@ namespace Tiendara.CapaDatos.Entidades
     public enum MedioPago { Efectivo = 0, Tarjeta = 1, Transferencia = 2, Mixto = 3 }
 
     public enum TipoMovimientoCaja { IngresoVenta = 0, Retiro = 1, Ajuste = 2 }
+
+    public enum PublicationType
+    {
+        Noticias = 0,
+        Empleos = 1,
+        Promociones = 2,
+        VentasRapidas = 3,
+        Servicios = 4,
+        Ofertas = 5,
+        Hot = 6
+    }
+
+
+
+    public enum NavTab
+    {
+        None = -1,
+        Home = 0,
+        World = 1,
+        Chat = 2,
+        Bell = 3
+    }
+
+
 }
-    ////  luego distinguir canal comercial del proveedor:
-    //public enum CanalProveedor
-    //{
-    //    DirectoATienda = 0,   // visita y surte tiendas (p. ej., Coca, Sabritas)
-    //    Mayorista = 1,
-    //    Minorista = 2,
-    //    Distribuidor = 3
-    //}
+////  luego distinguir canal comercial del proveedor:
+//public enum CanalProveedor
+//{
+//    DirectoATienda = 0,   // visita y surte tiendas (p. ej., Coca, Sabritas)
+//    Mayorista = 1,
+//    Minorista = 2,
+//    Distribuidor = 3
+//}

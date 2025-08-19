@@ -35,6 +35,19 @@
 	  <MauiXaml Update="CapaVisual\Componentes\Login\MonedaLoginView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="CapaVisual\PaginasModulo\ChatListPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="CapaVisual\PaginasModulo\ChatThreadPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="CapaVisual\PaginasModulo\MapPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.1" />
 	</ItemGroup>
 
 </Project>

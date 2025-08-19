@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="Tiendara.CapaVisual.Componentes.Marketing.ContenedorMarketingView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Name="Self">
+
+    <ContentView.Resources>
+        <Style x:Key="FloatPanel" TargetType="Border">
+            <Setter Property="BackgroundColor" Value="#CC14161A"/>
+            <Setter Property="StrokeThickness" Value="0"/>
+            <Setter Property="Padding" Value="14,12"/>
+            <Setter Property="StrokeShape">
+                <Setter.Value>
+                    <RoundRectangle CornerRadius="22"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="GlassCard" TargetType="Border">
+            <Setter Property="BackgroundColor" Value="#1AFFFFFF"/>
+            <Setter Property="StrokeThickness" Value="0"/>
+            <Setter Property="Padding" Value="14"/>
+            <Setter Property="StrokeShape">
+                <Setter.Value>
+                    <RoundRectangle CornerRadius="20"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ActionIcon" TargetType="ImageButton">
+            <Setter Property="BackgroundColor" Value="Transparent"/>
+            <Setter Property="WidthRequest" Value="28"/>
+            <Setter Property="HeightRequest" Value="28"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+
+        <Style x:Key="AvatarFrame" TargetType="Frame">
+            <Setter Property="CornerRadius" Value="999"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HasShadow" Value="False"/>
+            <Setter Property="HeightRequest" Value="36"/>
+            <Setter Property="WidthRequest" Value="36"/>
+            <Setter Property="BackgroundColor" Value="#2A2A2A"/>
+        </Style>
+    </ContentView.Resources>
+
+    <!-- WRAP centrado, ancho “pro” -->
+    <Grid HorizontalOptions="Center"
+          MaximumWidthRequest="{OnIdiom Phone=730, Tablet=860, Desktop=980}">
+
+        <!-- Panel flotante -->
+        <Border x:Name="Panel"
+                Style="{StaticResource FloatPanel}"
+                HorizontalOptions="Fill"
+                Margin="12,0"
+                HeightRequest="{Binding PanelHeight, Source={x:Reference Self}}">
+
+            <Grid RowDefinitions="Auto,*">
+
+                <!-- Header (tap/swipe para cambiar tipo) -->
+                <Grid Grid.Row="0" Padding="4,0,4,8">
+                    <Label x:Name="lblTipoInterno"
+                           Text="Noticias"
+                           FontAttributes="Bold"
+                           TextColor="#FFFFFF"/>
+                </Grid>
+
+                <!-- Lista -->
+                <CollectionView x:Name="lista"
+                                Grid.Row="1"
+                                ItemsSource="{Binding Items}"
+                                BackgroundColor="Transparent"
+                                ItemSizingStrategy="MeasureAllItems">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="8"/>
+                    </CollectionView.ItemsLayout>
+
+                    <CollectionView.EmptyView>
+                        <VerticalStackLayout Padding="12" Spacing="6">
+                            <Label Text="Aún no hay publicaciones para este filtro."
+                                   TextColor="#CFCFCF"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </CollectionView.EmptyView>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource GlassCard}">
+                                <VerticalStackLayout Spacing="10">
+
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                        <Frame Style="{StaticResource AvatarFrame}">
+                                            <Image Source="avatar_default.png" Aspect="AspectFill"/>
+                                        </Frame>
+                                        <VerticalStackLayout Spacing="0">
+                                            <Label Text="{Binding AutorLinea}" TextColor="#FFFFFF" FontAttributes="Bold"/>
+                                            <Label Text="{Binding TiempoRelativo}" TextColor="#B0B0B0" FontSize="11"/>
+                                        </VerticalStackLayout>
+                                    </Grid>
+
+                                    <Label Text="{Binding Texto}" TextColor="#EDEDED" LineBreakMode="WordWrap"/>
+
+                                    <Border IsVisible="{Binding TieneImagen}" Padding="0">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="16"/>
+                                        </Border.StrokeShape>
+                                        <Image Source="{Binding ImagenPath}" Aspect="AspectFill" HeightRequest="180"/>
+                                    </Border>
+
+                                    <HorizontalStackLayout Spacing="18" Margin="0,2,0,0">
+                                        <ImageButton Style="{StaticResource ActionIcon}" Clicked="OnCommentClicked">
+                                            <VisualStateManager.VisualStateGroups>
+                                                <VisualStateGroup Name="CommonStates">
+                                                    <VisualState Name="Normal">
+                                                        <VisualState.Setters>
+                                                            <Setter Property="ImageButton.Source" Value="{Binding IconComment, Source={x:Reference Self}}"/>
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                    <VisualState Name="Pressed">
+                                                        <VisualState.Setters>
+                                                            <Setter Property="ImageButton.Source" Value="{Binding IconCommentPressed, Source={x:Reference Self}}"/>
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                </VisualStateGroup>
+                                            </VisualStateManager.VisualStateGroups>
+                                        </ImageButton>
+
+                                        <ImageButton Style="{StaticResource ActionIcon}" Clicked="OnContactClicked">
+                                            <VisualStateManager.VisualStateGroups>
+                                                <VisualStateGroup Name="CommonStates">
+                                                    <VisualState Name="Normal">
+                                                        <VisualState.Setters>
+                                                            <Setter Property="ImageButton.Source" Value="{Binding IconMessage, Source={x:Reference Self}}"/>
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                    <VisualState Name="Pressed">
+                                                        <VisualState.Setters>
+                                                            <Setter Property="ImageButton.Source" Value="{Binding IconMessagePressed, Source={x:Reference Self}}"/>
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                </VisualStateGroup>
+                                            </VisualStateManager.VisualStateGroups>
+                                        </ImageButton>
+
+                                        <ImageButton Style="{StaticResource ActionIcon}" Clicked="OnProfileClicked">
+                                            <VisualStateManager.VisualStateGroups>
+                                                <VisualStateGroup Name="CommonStates">
+                                                    <VisualState Name="Normal">
+                                                        <VisualState.Setters>
+                                                            <Setter Property="ImageButton.Source" Value="{Binding IconProfile, Source={x:Reference Self}}"/>
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                    <VisualState Name="Pressed">
+                                                        <VisualState.Setters>
+                                                            <Setter Property="ImageButton.Source" Value="{Binding IconProfilePressed, Source={x:Reference Self}}"/>
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                </VisualStateGroup>
+                                            </VisualStateManager.VisualStateGroups>
+                                        </ImageButton>
+                                    </HorizontalStackLayout>
+
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+        </Border>
+    </Grid>
+</ContentView>

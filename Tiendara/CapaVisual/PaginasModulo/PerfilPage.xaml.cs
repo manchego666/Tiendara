@@ -19,10 +19,10 @@ public partial class PerfilPage : ContentPage
     {
         InitializeComponent();
 
-        // Barra inferior
-        nav.HomeClicked += async (_, __) =>
-            await DisplayAlert("ZDEV - 2025", "Ya estás en Perfil.", "OK");
-        // nav.WorldClicked / nav.ChatClicked / nav.BellClicked según necesites
+        nav.Activo = "none"; // desactiva todos
+        nav.HomeClicked += async (_, __) => await Navigation.PopToRootAsync();
+        nav.WorldClicked += async (_, __) => await Navigation.PushAsync(new MapPage());
+
 
         // Menú lateral
         btnMenu.Clicked += async (_, __) => await menuLateral.ToggleMenu();

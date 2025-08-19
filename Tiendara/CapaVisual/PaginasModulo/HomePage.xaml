@@ -5,21 +5,63 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:nav="clr-namespace:Tiendara.CapaVisual.Componentes.Navegacion"
     xmlns:comp="clr-namespace:Tiendara.CapaVisual.Componentes"
-    Title="Home"
+    xmlns:mk="clr-namespace:Tiendara.CapaVisual.Componentes.Marketing"
     Shell.NavBarIsVisible="False"
     BackgroundColor="#121212">
 
-    <!-- 2 filas: contenido / barra inferior -->
     <Grid RowDefinitions="*,Auto">
+        <!-- Fondo Zeus -->
+        <Image Source="portadahomepage1.png"
+               Aspect="AspectFill"
+               Grid.RowSpan="2"
+               InputTransparent="True" />
 
+        <!-- Píldora región + GPS arriba (fuera del contenedor) -->
+        <HorizontalStackLayout Grid.Row="0"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Start"
+                               Spacing="8"
+                               Margin="0,64,0,0"
+                               BackgroundColor="Transparent"
+                               ZIndex="30">
+            <Border Padding="14,7" BackgroundColor="#1A000000" StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="999"/>
+                </Border.StrokeShape>
+                <Label x:Name="lblRegion"
+                       Text="MX · Sinaloa · Culiacán"
+                       TextColor="White"
+                       FontAttributes="Bold"
+                       FontSize="12">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnRegionTapped" NumberOfTapsRequired="1"/>
+                    </Label.GestureRecognizers>
+                </Label>
+            </Border>
 
-        <!-- BARRA INFERIOR (como la tuya) -->
-        <nav:BarraNavegacionInferior x:Name="nav" Grid.Row="1" Activo="Home"/>
+            <Border BackgroundColor="#1A000000" StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="999"/>
+                </Border.StrokeShape>
+                <ImageButton x:Name="btnGps"
+                             Source="gps_on.png"
+                             BackgroundColor="Transparent"
+                             Padding="8"
+                             WidthRequest="34" HeightRequest="34"
+                             Clicked="OnGpsClicked"/>
+            </Border>
+        </HorizontalStackLayout>
 
-        <!-- OVERLAY DEL MENÚ (no tapa cuando está cerrado) -->
-        <comp:MenuLateralTiendara x:Name="menuLateral" Grid.RowSpan="2"/>
+        <!-- CONTENEDOR flotante (NO chiquito) -->
+        <mk:ContenedorMarketingView x:Name="feed"
+                                    Grid.Row="0"
+                                    Margin="16,108,16,0"
+                                    PanelHeight="{OnIdiom Phone=760, Tablet=860, Desktop=1000}"
+                                    ZIndex="10" />
 
-        <!-- MONEDITA FUERA DEL OVERLAY -->
+        <!-- Overlay menú y barra -->
+        <comp:MenuLateralTiendara x:Name="menuLateral" Grid.RowSpan="2" ZIndex="1500"/>
+        <nav:BarraNavegacionInferior x:Name="nav" Grid.Row="1" Activo="home" />
         <comp:BotonMenuLateralView x:Name="btnMenu"
                                    Grid.RowSpan="2"
                                    HorizontalOptions="Start"
