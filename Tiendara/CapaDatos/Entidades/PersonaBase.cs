@@ -9,10 +9,11 @@
 using System;
 using System.Security.Cryptography;
 using System.Text;
+using Tiendara.CapaContratos;
 
 namespace Tiendara.CapaDatos.Entidades
 {
-    public abstract class PersonaBase
+    public abstract class PersonaBase : IEntidadSql
     {
         public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -41,7 +42,7 @@ namespace Tiendara.CapaDatos.Entidades
         public int PasswordIterations { get; set; } = 100_000;
 
         public bool Activo { get; set; } = true;
-        public DateTime CreadoEn { get; set; } = DateTime.Now;
+        public DateTime CreadoEn { get; set; } = DateTime.UtcNow;
         public DateTime? ModificadoEn { get; set; }
 
         // ---------- Utilidades de perfil ----------
@@ -49,7 +50,7 @@ namespace Tiendara.CapaDatos.Entidades
         {
             Telefono = telefono?.Trim();
             Email = email ?? string.Empty;
-            ModificadoEn = DateTime.Now;
+            ModificadoEn = DateTime.UtcNow;
         }
 
         public void ActualizarIdentificadores(string? rfc = null, string? avatar = null, string? foto = null)
@@ -57,13 +58,13 @@ namespace Tiendara.CapaDatos.Entidades
             Rfc = rfc?.Trim();
             Avatar = avatar?.Trim();
             Foto = foto?.Trim();
-            ModificadoEn = DateTime.Now;
+            ModificadoEn = DateTime.UtcNow;
         }
 
         public void DefinirHuellaHash(string? huellaHashBase64)
         {
             HuellaHashBase64 = string.IsNullOrWhiteSpace(huellaHashBase64) ? null : huellaHashBase64.Trim();
-            ModificadoEn = DateTime.Now;
+            ModificadoEn = DateTime.UtcNow;
         }
 
         // ---------- Password ----------
@@ -83,7 +84,7 @@ namespace Tiendara.CapaDatos.Entidades
 
             PasswordSaltBase64 = Convert.ToBase64String(salt);
             PasswordHashBase64 = Convert.ToBase64String(hash);
-            ModificadoEn = DateTime.Now;
+            ModificadoEn = DateTime.UtcNow;
         }
 
         public bool VerificarPassword(string passwordPlano)

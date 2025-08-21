@@ -3,20 +3,25 @@ using Microsoft.Maui.Media;
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Tiendara.CapaDatos.Repos;
+using Tiendara.CapaSql.Startup;
 using Tiendara.CapaLogica.Servicios;
 using Tiendara.CapaVisual.Componentes.Portada;
 using Tiendara.CapaVisual.Componentes.Publicaciones;
+using Tiendara.CapaContratos;
 
 namespace Tiendara.CapaVisual.PaginasModulo;
 
 public partial class PerfilPage : ContentPage
 {
-    private readonly INegocioRepo _negocios = new NegocioRepo();
-    private readonly IUsuarioRepo _usuarios = new UsuarioRepo();
+    private readonly INegocioRepo _negocios;
+    private readonly IUsuarioRepo _usuarios;
+    private readonly SessionService _sessionService;
 
-    public PerfilPage()
+    public PerfilPage(INegocioRepo negocios, IUsuarioRepo usuarios, SessionService sessionService)
     {
+        _negocios = negocios;
+        _usuarios = usuarios;
+        _sessionService = sessionService;
         InitializeComponent();
 
         nav.Activo = "none"; // desactiva todos
@@ -39,6 +44,7 @@ public partial class PerfilPage : ContentPage
         pub.CommentRequested += OnPubCommentRequested;
         pub.ContactRequested += OnPubContactRequested;
         pub.ProfileRequested += OnPubProfileRequested;
+        
     }
 
     protected override async void OnAppearing()
@@ -49,7 +55,7 @@ public partial class PerfilPage : ContentPage
 
     private async Task SincronizarConSesionAsync()
     {
-        var u = SesionActual.Usuario;
+        var u = _sessionService.UsuarioLogeado;
         if (u == null)
         {
             await DisplayAlert("Sesión", "No hay sesión activa. Inicia sesión de nuevo.", "OK");
@@ -130,7 +136,7 @@ public partial class PerfilPage : ContentPage
             };
             if (fr == null) return;
 
-            var u = SesionActual.Usuario;
+            var u = _sessionService.UsuarioLogeado;
             if (u == null)
             {
                 await DisplayAlert("Sesión", "Sin sesión activa.", "OK");

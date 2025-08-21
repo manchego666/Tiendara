@@ -2,8 +2,9 @@
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
-using Tiendara.CapaDatos.Repos;
+using Tiendara.CapaSql.Startup;
 using Tiendara.CapaLogica.Servicios;
+using Tiendara.CapaContratos;
 
 namespace Tiendara.CapaVisual.PaginasModulo
 {
@@ -11,12 +12,14 @@ namespace Tiendara.CapaVisual.PaginasModulo
     {
         private readonly IInventarioRepo _repo;
         private readonly IInventarioService _svc;
-
-        public InventarioPage()
+        private readonly SessionService _session;
+        public InventarioPage(IInventarioRepo repo, IInventarioService svc, SessionService session)
         {
+            _repo = repo;
+            _svc = svc;
+            _session = session;
+
             InitializeComponent();
-            _repo = new InventarioRepo();
-            _svc = new InventarioService(_repo);
         }
 
         private Guid ParseGuidOrEmpty(string? s)

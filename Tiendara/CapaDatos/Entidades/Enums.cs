@@ -20,7 +20,7 @@ namespace Tiendara.CapaDatos.Entidades
     /// </summary>
     public enum RolUsuario
     {
-        Tiendaro = 0,    // comerciante/cliente base que usa la app para su tienda
+        UsuarioNormal = 0,    // usuario base que accede a la app
         Empleado = 1,    // personal operativo de una tienda/negocio
         Proveedor = 2,   // vende/surte a tiendas o clientes
         Emprendedor = 3, // dueño/propietario de negocio (tacos, sushi, abarrotes, etc.)
@@ -87,17 +87,20 @@ namespace Tiendara.CapaDatos.Entidades
     }
 
     /// <summary>
-    /// Unidad de venta para productos/servicios.
+    /// Unidad principal con la que se vende el producto o servicio.
+    /// Visible en etiquetas, venta, catálogos, etc.
     /// </summary>
     public enum UnidadVenta
     {
-        Pza = 0,
-        Kg = 1,
-        Lt = 2,
-        Ml = 3,
-        G = 4,
-        Servicio = 5
+        Pza = 0,      // piezas
+        Kg = 1,       // kilogramos
+        G = 2,        // gramos
+        Lt = 3,       // litros
+        Ml = 4,       // mililitros
+        M = 5,        // metros (ej: tela)
+        Servicio = 6  // aplica para servicios (masaje, corte, etc.)
     }
+
 
     /// <summary>
     /// Categorías básicas para productos físicos.
@@ -139,11 +142,27 @@ namespace Tiendara.CapaDatos.Entidades
          
     }
 
-    public enum EstadoVenta { Abierta = 0, Finalizada = 1, Cancelada = 2 }
+    public enum EstadoVenta 
+    {
+        Abierta = 0,
+        Finalizada = 1,
+        Cancelada = 2
+    }
 
-    public enum MedioPago { Efectivo = 0, Tarjeta = 1, Transferencia = 2, Mixto = 3 }
+    public enum MedioPago 
+    { 
+        Efectivo = 0,
+        Tarjeta = 1,
+        Transferencia = 2,
+        Mixto = 3 
+    }
 
-    public enum TipoMovimientoCaja { IngresoVenta = 0, Retiro = 1, Ajuste = 2 }
+    public enum TipoMovimientoCaja 
+    { 
+        IngresoVenta = 0,
+        Retiro = 1,
+        Ajuste = 2
+    }
 
     public enum PublicationType
     {
@@ -167,13 +186,67 @@ namespace Tiendara.CapaDatos.Entidades
         Bell = 3
     }
 
+    /// <summary>
+    /// Define las medidas físicas que puede tener un producto o servicio.
+    /// Puede tener múltiples banderas (flags) a la vez.
+    /// Ej: un garrafón puede tener Peso y Volumen.
+    /// </summary>
+    [Flags]
+    public enum TipoMedida
+    {
+        Ninguna = 0,
+        Unidad = 1 << 0,   // piezas, cantidades sueltas
+        Peso = 1 << 1,     // gramos, kilos
+        Volumen = 1 << 2,  // litros, mililitros
+        Longitud = 1 << 3, // metros, centímetros
+        Porcion = 1 << 4   // corte, ración, medio kilo, etc.
+    }
 
+
+    public enum TipoCuenta
+    {
+        Gratuita = 0,
+        Freemium = 1,
+        Profesional = 2,
+        Empresarial = 3
+    }
+
+    public enum EstadoProducto
+    {
+        Activo = 0,
+        Descontinuado = 1,
+        Agotado = 2,
+        BajoDemanda = 3
+    }
+
+    public enum TipoOferta
+    {
+        Ninguna = 0,
+        Descuento = 1,
+        DosPorUno = 2,
+        Cupon = 3,
+        Paquete = 4
+    }
+
+    public enum TipoIdentificacion
+    {
+        INE = 0,
+        Pasaporte = 1,
+        RFC = 2,
+        CURP = 3,
+        Otro = 4
+    }
+
+    /// <summary>
+    /// Canal de distribución del proveedor.
+    /// Define cómo hace llegar sus productos a los clientes/tiendas.
+    /// </summary>
+    public enum CanalProveedor
+    {
+        DirectoATienda = 0,     // Visita tiendas físicas y surte directamente (Ej: Coca-Cola, Sabritas)
+        Mayorista = 1,          // Vende a granel a otras empresas o distribuidores
+        Minorista = 2,          // Vende al por menor a consumidores finales
+        Distribuidor = 3,       // Distribuye productos de otros proveedores
+        PlataformaOnline = 4    // Opera vía apps/webs sin punto físico (dropshipping, e-commerce, etc.)
+    }
 }
-////  luego distinguir canal comercial del proveedor:
-//public enum CanalProveedor
-//{
-//    DirectoATienda = 0,   // visita y surte tiendas (p. ej., Coca, Sabritas)
-//    Mayorista = 1,
-//    Minorista = 2,
-//    Distribuidor = 3
-//}

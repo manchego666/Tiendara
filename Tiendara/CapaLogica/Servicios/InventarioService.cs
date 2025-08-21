@@ -1,92 +1,90 @@
-﻿using System;
-using System.Linq;
+﻿// ------------------------------------------------------------
+// Proyecto: Tiendara
+// Autor: ZORRODEV
+// Fecha: [2025-08-10]
+// Derechos reservados © ZORRODEV - 2025
+// ------------------------------------------------------------
+
+using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
+using Tiendara.CapaContratos;
 using Tiendara.CapaDatos.Entidades;
-using Tiendara.CapaDatos.Repos;
-using static Tiendara.CapaLogica.Mathx;
 
 namespace Tiendara.CapaLogica.Servicios
 {
     public sealed class InventarioService : IInventarioService
     {
-        private readonly IInventarioRepo _repo;
-        public InventarioService(IInventarioRepo repo) => _repo = repo;
+        private readonly IInventarioRepo _invRepo;
+        private readonly Microsoft.Extensions.Logging.ILogger<InventarioService>? _log;
 
-        public async Task RegistrarEntrada(Guid negocioId, Guid productoId, decimal cantidad, decimal costoUnitario,
-                                           string? referencia = null, string? usuario = null)
+        public InventarioService(IInventarioRepo invRepo,
+            Microsoft.Extensions.Logging.ILogger<InventarioService>? log = null)
+        {
+            _invRepo = invRepo;
+            _log = log;
+        }
+
+        public async Task RegistrarEntrada(
+            Guid negocioId, Guid productoId, decimal cantidad, decimal costoUnitario,
+            string? referencia = null, string? usuario = null)
         {
             if (cantidad <= 0) throw new ArgumentOutOfRangeException(nameof(cantidad));
             if (costoUnitario < 0) throw new ArgumentOutOfRangeException(nameof(costoUnitario));
 
-            var inv = await _repo.GetOrCreateAsync(negocioId, productoId);
-
-            // Moving average
-            var totalActual = inv.CantidadDisponible * inv.CostoPromedio;
-            var totalEntrada = cantidad * costoUnitario;
-            var nuevaCantidad = inv.CantidadDisponible + cantidad;
-            var nuevoCostoProm = nuevaCantidad > 0 ? (totalActual + totalEntrada) / nuevaCantidad : inv.CostoPromedio;
-
-            inv.CantidadDisponible = R2(nuevaCantidad);
-            inv.CostoPromedio = R4(nuevoCostoProm);
-            inv.CostoUltimaCompra = R4(costoUnitario);
-            inv.ModificadoEn = DateTime.Now;
-
-            await _repo.UpdateAsync(inv);
-
+            var inv = await _invRepo.GetOrCreateAsync(negocioId, productoId);
             var mov = new MovimientoInventario
             {
                 InventarioId = inv.Id,
                 NegocioId = negocioId,
                 ProductoId = productoId,
                 Tipo = TipoMovimiento.Entrada,
-                Cantidad = R2(cantidad),
-                CostoUnitario = R4(costoUnitario),
+                Cantidad = cantidad,
+                CostoUnitario = costoUnitario,
                 Referencia = referencia,
-                Usuario = usuario,
-                Fecha = DateTime.Now
+                Usuario = usuario
             };
-            await _repo.AddMovimientoAsync(mov);
+            await _invRepo.AddMovimientoAsync(mov);
+
+            _log?.LogInformation("Entrada inventario Negocio {NegocioId}, Producto {ProductoId}, Cant {Cant}, Costo {Costo}",
+                negocioId, productoId, cantidad, costoUnitario);
         }
 
-        public async Task RegistrarSalida(Guid negocioId, Guid productoId, decimal cantidad,
-                                          Guid? ventaId = null, string? referencia = null, string? usuario = null)
+        public async Task RegistrarSalida(
+            Guid negocioId, Guid productoId, decimal cantidad,
+            Guid? ventaId = null, string? referencia = null, string? usuario = null)
         {
             if (cantidad <= 0) throw new ArgumentOutOfRangeException(nameof(cantidad));
-            var inv = await _repo.GetOrCreateAsync(negocioId, productoId);
-            if (inv.CantidadDisponible < cantidad)
-                throw new InvalidOperationException("Stock insuficiente.");
 
-            inv.CantidadDisponible = R2(inv.CantidadDisponible - cantidad);
-            inv.ModificadoEn = DateTime.Now;
-            await _repo.UpdateAsync(inv);
+            var inv = await _invRepo.GetOrCreateAsync(negocioId, productoId);
+            if (inv.DisponibleParaVenta < cantidad)
+                throw new InvalidOperationException($"No hay suficiente inventario. Disponible: {inv.DisponibleParaVenta}, solicitado: {cantidad}");
 
             var mov = new MovimientoInventario
             {
                 InventarioId = inv.Id,
                 NegocioId = negocioId,
                 ProductoId = productoId,
-                VentaId = ventaId,
                 Tipo = TipoMovimiento.Salida,
-                Cantidad = R2(cantidad),
+                Cantidad = cantidad,
                 CostoUnitario = inv.CostoPromedio,
+                VentaId = ventaId,
                 Referencia = referencia,
-                Usuario = usuario,
-                Fecha = DateTime.Now
+                Usuario = usuario
             };
-            await _repo.AddMovimientoAsync(mov);
+            await _invRepo.AddMovimientoAsync(mov);
+
+            _log?.LogInformation("Salida inventario Negocio {NegocioId}, Producto {ProductoId}, Cant {Cant}, Venta {VentaId}",
+                negocioId, productoId, cantidad, ventaId);
         }
 
         public async Task Ajustar(Guid negocioId, Guid productoId, decimal ajusteCantidad, string motivo, string? usuario = null)
         {
             if (ajusteCantidad == 0) return;
 
-            var inv = await _repo.GetOrCreateAsync(negocioId, productoId);
-            var nueva = inv.CantidadDisponible + ajusteCantidad;
-            if (nueva < 0) throw new InvalidOperationException("Ajuste dejaría stock negativo.");
-
-            inv.CantidadDisponible = R2(nueva);
-            inv.ModificadoEn = DateTime.Now;
-            await _repo.UpdateAsync(inv);
+            var inv = await _invRepo.GetOrCreateAsync(negocioId, productoId);
+            if (inv.DisponibleParaVenta + ajusteCantidad < 0)
+                throw new InvalidOperationException($"El ajuste dejaría inventario negativo. Disponible: {inv.DisponibleParaVenta}, ajuste: {ajusteCantidad}");
 
             var mov = new MovimientoInventario
             {
@@ -94,13 +92,15 @@ namespace Tiendara.CapaLogica.Servicios
                 NegocioId = negocioId,
                 ProductoId = productoId,
                 Tipo = TipoMovimiento.Ajuste,
-                Cantidad = R2(ajusteCantidad),
+                Cantidad = ajusteCantidad,
                 CostoUnitario = inv.CostoPromedio,
                 Referencia = motivo,
-                Usuario = usuario,
-                Fecha = DateTime.Now
+                Usuario = usuario
             };
-            await _repo.AddMovimientoAsync(mov);
+            await _invRepo.AddMovimientoAsync(mov);
+
+            _log?.LogWarning("Ajuste inventario Negocio {NegocioId}, Producto {ProductoId}, Ajuste {Ajuste}, Motivo {Motivo}",
+                negocioId, productoId, ajusteCantidad, motivo);
         }
     }
 }

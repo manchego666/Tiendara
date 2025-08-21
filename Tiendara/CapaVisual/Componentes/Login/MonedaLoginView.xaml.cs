@@ -1,25 +1,25 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.Maui;
 using Microsoft.Maui.Controls;
-using Tiendara.CapaDatos.Repos;
-using Tiendara.CapaLogica.Servicios;
+using Tiendara.CapaContratos;        // IAuthService
+using Tiendara.CapaVisual.Utils;     // ServiceResolver, SessionService
 
 namespace Tiendara.CapaVisual.Componentes.Login;
 
 public partial class MonedaLoginView : ContentView
 {
-    private readonly AuthLocalService _auth = new(new UsuarioRepo());
+    // DI
+    private readonly IAuthService _auth = ServiceResolver.Get<IAuthService>();
+    private readonly SessionService _session = ServiceResolver.Get<SessionService>();
 
-    const uint FlipDurationMs = 2000; // 2.0s
-    const int FlipTurns = 6;    // 6 vueltas
+    const uint FlipDurationMs = 2000;
+    const int FlipTurns = 6;
     bool _animBusy;
 
     public MonedaLoginView()
     {
         InitializeComponent();
 
-        // Clip circular y shimmer al tamaño de la moneda
         Coin.SizeChanged += (_, __) =>
         {
             var cx = Coin.Width / 2;
@@ -35,10 +35,8 @@ public partial class MonedaLoginView : ContentView
         StartIdleShimmer();
     }
 
-    // ======== Handlers que XAML necesita ========
     private void OnToggleLoginPass(object? s, EventArgs e) => tbLoginPass.IsPassword = !tbLoginPass.IsPassword;
     private void OnToggleRegPass(object? s, EventArgs e) => tbRegPass.IsPassword = !tbRegPass.IsPassword;
-
     private async void OnFlipToRegister(object? s, EventArgs e) => await FlipAsync(toRegister: true);
 
     private async void OnLoginClicked(object? s, EventArgs e)
@@ -49,11 +47,18 @@ public partial class MonedaLoginView : ContentView
         if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(pass))
         { await Alert("Faltan datos", "Ingresa email y contraseña."); return; }
 
-        var (ok, err, u) = await _auth.LoginAsync(email, pass);
-        if (!ok)
-        { await Alert("Ups", err ?? "Usuario o contraseña incorrectos."); return; }
+        try
+        {
+            var user = await _auth.LoginAsync(email, pass);
+            if (user is null) { await Alert("Ups", "Usuario o contraseña incorrectos."); return; }
 
-        await Shell.Current.GoToAsync("//home");
+            _session.Set(user);                     // ← guardar sesión
+            await Shell.Current.GoToAsync("//home");// ← navegar a Home
+        }
+        catch (Exception ex)
+        {
+            await Alert("Error", ex.Message);
+        }
     }
 
     private async void OnRegisterClicked(object? s, EventArgs e)
@@ -69,18 +74,22 @@ public partial class MonedaLoginView : ContentView
         if (pass.Length < 6)
         { await Alert("Contraseña", "Debe tener al menos 6 caracteres."); return; }
 
-        var (ok, err, u) = await _auth.RegistrarAsync(nombre, email, pass);
-        if (!ok)
-        { await Alert("Atención", err ?? "No se pudo crear la cuenta."); return; }
+        try
+        {
+            var u = await _auth.RegistrarAsync(nombre, "", email, pass);
+            await Alert("¡Registro exitoso!", "Tu cuenta fue creada correctamente.");
 
-        await Alert("¡Registro exitoso!", "Tu cuenta fue creada correctamente.");
-
-        // Prellenar y volver al login automáticamente
-        tbLoginEmail.Text = email;
-        await FlipAsync(toRegister: false);
+            // Prellenar y volver al login automáticamente
+            tbLoginEmail.Text = email;
+            await FlipAsync(toRegister: false);
+        }
+        catch (Exception ex)
+        {
+            await Alert("Atención", ex.Message);
+        }
     }
 
-    // ======== Animaciones ========
+    // === Animaciones (igual) ===
     private async Task FlipAsync(bool toRegister)
     {
         if (_animBusy) return;

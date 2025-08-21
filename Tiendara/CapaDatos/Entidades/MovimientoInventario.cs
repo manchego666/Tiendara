@@ -6,10 +6,11 @@
 // Derechos reservados © ZORRODEV - 2025
 // ------------------------------------------------------------
 using System;
+using Tiendara.CapaContratos;
 
 namespace Tiendara.CapaDatos.Entidades;
 
-public class MovimientoInventario
+public class MovimientoInventario : IEntidadSql
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -25,5 +26,5 @@ public class MovimientoInventario
 
     public string? Referencia { get; set; }        // compra#, venta#, motivo ajuste
     public string? Usuario { get; set; }
-    public DateTime Fecha { get; set; } = DateTime.Now;
+    public DateTime Fecha { get; set; } = DateTime.UtcNow;
 }

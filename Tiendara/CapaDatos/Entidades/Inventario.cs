@@ -6,10 +6,11 @@
 // Derechos reservados © ZORRODEV - 2025
 // ------------------------------------------------------------
 using System;
+using Tiendara.CapaContratos;
 
 namespace Tiendara.CapaDatos.Entidades;
 
-public class Inventario
+public class Inventario : IEntidadSql
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -30,7 +31,7 @@ public class Inventario
     public decimal CostoUltimaCompra { get; set; }
 
     // Auditoría
-    public DateTime CreadoEn { get; set; } = DateTime.Now;
+    public DateTime CreadoEn { get; set; } = DateTime.UtcNow;
     public DateTime? ModificadoEn { get; set; }
 
     public decimal DisponibleParaVenta => Math.Round(CantidadDisponible - CantidadReservada, 2);

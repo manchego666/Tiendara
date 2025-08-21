@@ -7,10 +7,11 @@
 // ------------------------------------------------------------
 
 using System;
+using Tiendara.CapaContratos;
 
 namespace Tiendara.CapaDatos.Entidades;
 
-public class Negocio
+public class Negocio : IEntidadSql
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -33,12 +34,12 @@ public class Negocio
     public bool Abierto { get; set; } = false;
     public bool Activo { get; set; } = true;
 
-    public DateTime CreadoEn { get; set; } = DateTime.Now;
+    public DateTime CreadoEn { get; set; } = DateTime.UtcNow;
     public DateTime? ModificadoEn { get; set; }
     public DateTime? UltimoCambioEstado { get; set; }
 
-    public void Abrir()  { Abierto = true;  UltimoCambioEstado = DateTime.Now; ModificadoEn = DateTime.Now; }
-    public void Cerrar() { Abierto = false; UltimoCambioEstado = DateTime.Now; ModificadoEn = DateTime.Now; }
+    public void Abrir()  { Abierto = true;  UltimoCambioEstado = DateTime.UtcNow; ModificadoEn = DateTime.UtcNow; }
+    public void Cerrar() { Abierto = false; UltimoCambioEstado = DateTime.UtcNow; ModificadoEn = DateTime.UtcNow; }
 
     public bool TieneGeoValida()
         => Latitud is >= -90 and <= 90 && Longitud is >= -180 and <= 180;

@@ -1,8 +1,17 @@
-﻿using System;
+﻿// ------------------------------------------------------------
+// Proyecto: Tiendara
+// Autor: ZORRODEV
+// Descripción: [Representa una clase para servicios como corte de pelo, plomeria , electricidad, limpieza. Con el tiempo irá creciendo ZORRODEV - 2025]
+// Fecha: [2025-08-10]
+// Derechos reservados © ZORRODEV - 2025
+// ------------------------------------------------------------
+
+using System;
+using Tiendara.CapaContratos;
 
 namespace Tiendara.CapaDatos.Entidades;
 
-public class Servicio : IVendible
+public class Servicio : IVendible,IEntidadSql
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 

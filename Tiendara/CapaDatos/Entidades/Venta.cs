@@ -8,15 +8,16 @@
 
 using System;
 using System.Collections.Generic;
+using Tiendara.CapaContratos;
 
 namespace Tiendara.CapaDatos.Entidades;
 
-public class Venta
+public class Venta : IEntidadSql
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid NegocioId { get; set; }
     public Guid VendedorUsuarioId { get; set; }
-    public DateTime Fecha { get; set; } = DateTime.Now;
+    public DateTime Fecha { get; set; } = DateTime.UtcNow;
 
     public List<VentaLinea> Lineas { get; set; } = new();
 
@@ -31,7 +32,7 @@ public class Venta
     public string? Referencia { get; set; }
     public EstadoVenta Estado { get; set; } = EstadoVenta.Finalizada;
 
-    public DateTime CreadoEn { get; set; } = DateTime.Now;
+    public DateTime CreadoEn { get; set; } = DateTime.UtcNow;
     public DateTime? ModificadoEn { get; set; }
 }
 

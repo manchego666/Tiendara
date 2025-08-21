@@ -10,12 +10,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Tiendara.CapaContratos;
 
 namespace Tiendara.CapaDatos.Entidades;
 
 public class Usuario : PersonaBase, IVendedor
 {
-    public HashSet<RolUsuario> Roles { get; } = new() { RolUsuario.Tiendaro };
+    public HashSet<RolUsuario> Roles { get; } = new() { RolUsuario.UsuarioNormal };
 
     public Profesion? Profesion { get; set; }     // si es Profesionista
     public OficioTecnico? Oficio { get; set; }    // si es Tecnico

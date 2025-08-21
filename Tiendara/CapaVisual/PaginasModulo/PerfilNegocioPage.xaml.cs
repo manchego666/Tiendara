@@ -1,17 +1,20 @@
 using Microsoft.Maui.Controls;
 using System;
 using System.Threading.Tasks;
-using Tiendara.CapaDatos.Repos;
 using Tiendara.CapaLogica.Servicios;
+using Tiendara.CapaContratos;
+using Tiendara.CapaVisual.Utils;
 using Tiendara.CapaVisual.Componentes.Publicaciones;
 
 namespace Tiendara.CapaVisual.PaginasModulo
 {
     public partial class PerfilNegocioPage : ContentPage
     {
-        private readonly INegocioRepo _negocios = new NegocioRepo();
+        private readonly INegocioRepo _negocios;
+        private readonly Utils.SessionService _session;
+        private readonly Guid _negocioId;
 
-        public PerfilNegocioPage(/* Guid negocioId si quieres */)
+        public PerfilNegocioPage(Guid negocioId/* Guid negocioId si quieres */)
         {
             InitializeComponent();
 
@@ -36,44 +39,27 @@ namespace Tiendara.CapaVisual.PaginasModulo
 
         private async Task CargarDatosAsync()
         {
-            var u = SesionActual.Usuario;
-            if (u == null) return;
-
-            // Si tienes tiendas registradas, toma la primera
-            try
+            var negocio = await _negocios.GetByIdAsync(_negocioId);
+            if (negocio == null)
             {
-                var tiendas = await _negocios.ListByUsuarioAsync(u.Id);
-                if (tiendas != null && tiendas.Count > 0)
-                {
-                    var t = tiendas[0];
-                    portada.Titulo = string.IsNullOrWhiteSpace(t.Nombre) ? "Mi Negocio" : t.Nombre.Trim();
-                    portada.Subtitulo = "Negocio";
-
-                    // Si luego agregas LogoPath:
-                    // if (!string.IsNullOrWhiteSpace(t.LogoPath) && File.Exists(t.LogoPath))
-                    //     portada.FotoPath = t.LogoPath;
-
-                    // Feed modo Tienda
-                    pub.Modo = PublicacionesModo.Tienda;
-                    pub.TiendaId = t.Id;
-                    pub.TiendaNombre = t.Nombre ?? "Mi Negocio";
-
-                    // Autor (quien publica) = usuario en sesión
-                    pub.AutorId = u.Id;
-                    pub.AutorNombre = u.Nombre ?? "Usuario";
-                }
-                else
-                {
-                    // Sin tiendas: deja textos por defecto
-                    portada.Titulo = "Mi Negocio";
-                    portada.Subtitulo = "Negocio";
-                }
+                await DisplayAlert("Error", "No se encontró el negocio.", "OK");
+                await Navigation.PopAsync();
+                return;
             }
-            catch
-            {
-                portada.Titulo = "Mi Negocio";
-                portada.Subtitulo = "Negocio";
-            }
+
+            // Asigna los datos del negocio a la UI
+            portada.Titulo = string.IsNullOrWhiteSpace(negocio.Nombre) ? "Mi Negocio" : negocio.Nombre.Trim();
+            portada.Subtitulo = "Negocio";
+
+            // Feed modo Tienda
+            pub.Modo = PublicacionesModo.Tienda;
+            pub.TiendaId = negocio.Id;
+            pub.TiendaNombre = negocio.Nombre ?? "Mi Negocio";
+
+            // Autor (quien publica) = usuario en sesión
+            var usuario = _session.UsuarioActual;
+            pub.AutorId = usuario?.Id ?? Guid.Empty;
+            pub.AutorNombre = usuario?.Nombre ?? "Usuario";
         }
 
         // ===== Acciones del feed =====

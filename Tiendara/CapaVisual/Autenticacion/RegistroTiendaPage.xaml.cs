@@ -1,14 +1,15 @@
 using Microsoft.Maui.Controls;
 using System;
 using Tiendara.CapaDatos.Entidades;
-using Tiendara.CapaDatos.Repos;
-using Tiendara.CapaLogica.Servicios;
+using Tiendara.CapaContratos;         // INegocioRepo
+using Tiendara.CapaVisual.Utils;      // ServiceResolver, SessionService
 
 namespace Tiendara.CapaVisual.Autenticacion
 {
     public partial class RegistroTiendaPage : ContentPage
     {
-        private readonly INegocioRepo _repo = new NegocioRepo();
+        private readonly INegocioRepo _repo = ServiceResolver.Get<INegocioRepo>();
+        private readonly SessionService _session = ServiceResolver.Get<SessionService>();
 
         public RegistroTiendaPage()
         {
@@ -24,7 +25,7 @@ namespace Tiendara.CapaVisual.Autenticacion
                 return;
             }
 
-            if (!SesionActual.Autenticado)
+            if (!_session.Autenticado)
             {
                 await DisplayAlert("Tienda", "Primero inicia sesión.", "OK");
                 return;
@@ -32,7 +33,7 @@ namespace Tiendara.CapaVisual.Autenticacion
 
             var n = new Negocio
             {
-                PropietarioUsuarioId = SesionActual.UsuarioId,
+                PropietarioUsuarioId = _session.UsuarioId,
                 Nombre = nombre,
                 Giro = (txtGiro.Text ?? "").Trim(),
                 Telefono = (txtTelefono.Text ?? "").Trim(),
@@ -42,9 +43,7 @@ namespace Tiendara.CapaVisual.Autenticacion
 
             await _repo.AddAsync(n);
             await DisplayAlert("Tienda", "¡Tienda registrada!", "OK");
-
-            // después puedes ir a PerfilNegocioPage o Home
-            await Navigation.PopAsync(); // cierra registro tienda
+            await Navigation.PopAsync();
         }
     }
 }

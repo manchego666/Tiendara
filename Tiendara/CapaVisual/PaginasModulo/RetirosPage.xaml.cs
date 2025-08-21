@@ -6,30 +6,30 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Tiendara.CapaContratos;
 using Tiendara.CapaDatos.Entidades;
-using Tiendara.CapaDatos.Repos;
 using Tiendara.CapaLogica.Servicios;
+using Tiendara.CapaVisual.Utils;
 
 namespace Tiendara.CapaVisual.PaginasModulo
 {
     public partial class RetirosPage : ContentPage
     {
         private readonly ICajaRepo _cajaRepo;
-        private readonly IVentaRepo _ventaRepo;
+        private readonly  IVentaRepo _ventaRepo;
         private readonly CajaService _cajaSvc;
 
         public ObservableCollection<RetiroItem> Items { get; } = new();
 
-        public RetirosPage()
+        public RetirosPage(ICajaRepo cajaRepo, IVentaRepo ventaRepo)
         {
             InitializeComponent();
             BindingContext = this;
 
-            _cajaRepo = new CajaRepo();
-            _ventaRepo = new VentaRepo();
+            _cajaRepo = cajaRepo;
+            _ventaRepo = ventaRepo;
             _cajaSvc = new CajaService(_cajaRepo, _ventaRepo);
 
-            // Negocios disponibles (stub por ahora)
             pickNegocio.ItemsSource = Negocios;
             pickNegocio.ItemDisplayBinding = new Binding(nameof(NegocioStub.Nombre));
             pickNegocio.SelectedIndex = 0;

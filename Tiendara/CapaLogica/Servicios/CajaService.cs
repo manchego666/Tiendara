@@ -1,56 +1,70 @@
-﻿using System;
+﻿// ------------------------------------------------------------
+// Proyecto: Tiendara
+// Autor: ZORRODEV
+// Fecha: [2025-08-10]
+// Derechos reservados © ZORRODEV - 2025
+// ------------------------------------------------------------
+
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Tiendara.CapaContratos;
 using Tiendara.CapaDatos.Entidades;
-using Tiendara.CapaDatos.Repos;
-using static Tiendara.CapaLogica.Mathx;
 
-namespace Tiendara.CapaLogica.Servicios;
-
-public sealed class CajaService : ICajaService
+namespace Tiendara.CapaLogica.Servicios
 {
-    private readonly ICajaRepo _repoCaja;
-    private readonly IVentaRepo _repoVenta;
-
-    public CajaService(ICajaRepo cajaRepo, IVentaRepo ventaRepo)
+    public sealed class CajaService : ICajaService
     {
-        _repoCaja = cajaRepo;
-        _repoVenta = ventaRepo;
-    }
+        private readonly ICajaRepo _cajaRepo;
+        private readonly IVentaRepo _ventaRepo;
 
-    public async Task<Guid> RegistrarRetiro(Guid negocioId, decimal monto, string concepto,
-                                            string? usuario = null, MedioPago medio = MedioPago.Efectivo)
-    {
-        if (monto <= 0) throw new ArgumentException("Monto debe ser > 0");
-        var mov = new MovimientoCaja
+        public CajaService(ICajaRepo cajaRepo, IVentaRepo ventaRepo)
         {
-            NegocioId = negocioId,
-            Tipo = TipoMovimientoCaja.Retiro,
-            Monto = R2(monto),
-            Medio = medio,
-            Concepto = concepto,
-            Usuario = usuario,
-            Fecha = DateTime.Now
-        };
-        await _repoCaja.AddMovimientoAsync(mov);
-        return mov.Id;
-    }
+            _cajaRepo = cajaRepo;
+            _ventaRepo = ventaRepo;
+        }
 
-    public async Task<CorteCaja> GenerarCorte(Guid negocioId, DateTime desde, DateTime hasta)
-    {
-        var movs = await _repoCaja.ListMovimientosAsync(negocioId, desde, hasta);
-        var ingresos = movs.Where(m => m.Tipo == TipoMovimientoCaja.IngresoVenta).Sum(m => m.Monto);
-        var retiros = movs.Where(m => m.Tipo == TipoMovimientoCaja.Retiro).Sum(m => m.Monto);
-
-        var ventas = await _repoVenta.ListByFechaAsync(negocioId, desde, hasta);
-        return new CorteCaja
+        public async Task<Guid> RegistrarRetiro(Guid negocioId, decimal monto, string concepto, string? usuario = null, MedioPago medio = MedioPago.Efectivo)
         {
-            NegocioId = negocioId,
-            Desde = desde,
-            Hasta = hasta,
-            Ingresos = R2(ingresos),
-            Retiros = R2(retiros),
-            Ventas = ventas.Count
-        };
+            if (monto <= 0) throw new ArgumentOutOfRangeException(nameof(monto));
+
+            var m = new MovimientoCaja
+            {
+                NegocioId = negocioId,
+                Tipo = TipoMovimientoCaja.Retiro,
+                Monto = monto,
+                Medio = medio,
+                Concepto = concepto,
+                Usuario = usuario
+            };
+            await _cajaRepo.AddMovimientoAsync(m);
+            return m.Id;
+        }
+
+        public async Task<CorteCaja> GenerarCorte(Guid negocioId, DateTime desde, DateTime hasta)
+        {
+            // Normalizamos a UTC asumiento que ya vienen en UTC; si no, conviértelos
+            var movs = await _cajaRepo.ListMovimientosAsync(negocioId, desde, hasta);
+            var ventas = await _ventaRepo.ListByFechaAsync(negocioId, desde, hasta);
+
+            var totalVentas = ventas.Sum(v => v.Total);
+            var totalRetiros = movs.Where(m => m.Tipo == TipoMovimientoCaja.Retiro).Sum(m => m.Monto);
+
+            // saldo inicial/final los puedes derivar con reglas propias; aquí simple:
+            var saldoInicial = 0m; // si llevas saldo continuo, podrías calcularlo
+            var saldoFinal = saldoInicial + totalVentas - totalRetiros;
+
+            return new CorteCaja
+            {
+                NegocioId = negocioId,
+                Desde = desde,
+                Hasta = hasta,
+                SaldoInicial = Math.Round(saldoInicial, 2, MidpointRounding.AwayFromZero),
+                TotalVentas = Math.Round(totalVentas, 2, MidpointRounding.AwayFromZero),
+                TotalRetiros = Math.Round(totalRetiros, 2, MidpointRounding.AwayFromZero),
+                SaldoFinal = Math.Round(saldoFinal, 2, MidpointRounding.AwayFromZero),
+                Movimientos = movs.Count
+            };
+        }
     }
 }

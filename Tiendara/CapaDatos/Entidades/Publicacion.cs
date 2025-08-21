@@ -5,14 +5,15 @@
 // Fecha: 2025-08-10
 // ------------------------------------------------------------
 using System;
+using Tiendara.CapaContratos;
 
 namespace Tiendara.CapaDatos.Entidades
 {
-    public class Publicacion
+    public class Publicacion : IEntidadSql
     {
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        // Tipo + región (lo usa el ContenedorMarketingView)
+        // Tipo + región (lo usa el feed/marketing)
         public PublicationType Type { get; set; } = PublicationType.Noticias;
         public Ubicacion Location { get; set; } = new();
 
@@ -25,10 +26,11 @@ namespace Tiendara.CapaDatos.Entidades
 
         // Contenido
         public string? Texto { get; set; }
-        public string? ImagenPath { get; set; } // usado por el feed
+        public string? ImagenPath { get; set; } // usa URL si guardas en blob/filesystem
 
         // Estado + tiempos
         public string Estado { get; set; } = "Publicado";
         public DateTime CreadoEn { get; set; } = DateTime.UtcNow;
+        public DateTime? ModificadoEn { get; set; }
     }
 }
