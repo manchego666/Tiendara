@@ -1,10 +1,4 @@
-﻿// ------------------------------------------------------------
-// Proyecto: Tiendara
-// Autor: ZORRODEV
-// Descripción: [Manejamos la clase producto sus atributos y primeras propiedades.[uwu]. Con el tiempo ira creciendo ZORRODEV - 2025]
-// Fecha: [2025-08-10]
-// Derechos reservados © ZORRODEV - 2025
-// ------------------------------------------------------------
+﻿// ... [Usings y encabezado de autor]
 
 
 using System;
