@@ -4,10 +4,11 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Tiendara.CapaContratos;
-using Tiendara.CapaLogica.Servicios; // ISesionService, INegocioService
+using Tiendara.CapaDatos.Entidades;
+using Tiendara.CapaLogica.Servicios; // SessionService
+using Tiendara.CapaLogica.Servicios.Tiendara.CapaLogica.Servicios;
 using Tiendara.CapaVisual.Autenticacion;
 using Tiendara.CapaVisual.PaginasModulo;
-using Tiendara.CapaVisual.Utils;
 
 namespace Tiendara.CapaVisual.Componentes
 {
@@ -20,7 +21,7 @@ namespace Tiendara.CapaVisual.Componentes
         {
             InitializeComponent();
 
-            // Estado inicial: no intercepta toques
+            // Estado inicial
             this.InputTransparent = true;
             this.ZIndex = 0;
 
@@ -41,7 +42,7 @@ namespace Tiendara.CapaVisual.Componentes
             btnCerrarSesion.Clicked += OnCerrarSesionClicked;
         }
 
-        // ===== Helper para DI (resuelve cuando ya hay contexto visual) =====
+        // ===== Helper para DI =====
         private T Get<T>() where T : notnull
         {
             var sp = Application.Current?.Handler?.MauiContext?.Services;
@@ -108,23 +109,26 @@ namespace Tiendara.CapaVisual.Componentes
             await CerrarAsync();
         }
 
-
-
-
         private async void OnPerfilTiendaClicked(object? s, EventArgs e)
         {
             try
             {
-                var sesion = Get<Utils.SessionService>();
+                // Obtener la sesión correctamente
+                var sesion = Get<SessionService>(); // <-- CapaLogica.Servicios.SessionService
+                var usuario = sesion.UsuarioActual;
 
-                if (!sesion.Autenticado)
+                if (usuario == null)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Perfil de negocio", "Inicia sesión primero.", "OK");
+                    await Application.Current.MainPage.DisplayAlert(
+                        "Perfil de negocio",
+                        "Inicia sesión primero.",
+                        "OK");
                     return;
                 }
 
+                // Traer negocios
                 var negociosSrv = Get<INegocioRepo>();
-                var tiendas = await negociosSrv.ListByUsuarioAsync(sesion.UsuarioId);
+                var tiendas = await negociosSrv.ListByUsuarioAsync(usuario.Id);
 
                 if (tiendas == null || tiendas.Count == 0)
                 {
@@ -135,12 +139,14 @@ namespace Tiendara.CapaVisual.Componentes
 
                     if (crear)
                         await Navigation.PushAsync(new RegistroTiendaPage());
+
                     return;
                 }
 
-                // Abre el perfil de la primera tienda (ajusta si necesitas selector)
+                // Abrir el perfil de la primera tienda
                 var tiendaId = tiendas.First().Id;
-                await Navigation.PushAsync(new PerfilNegocioPage(tiendaId));
+                await Navigation.PushAsync(new PerfilNegocioPage(negociosSrv, sesion));
+
             }
             catch (Exception ex)
             {
@@ -151,6 +157,12 @@ namespace Tiendara.CapaVisual.Componentes
                 await CerrarAsync();
             }
         }
+    
+
+
+
+
+
 
         private async void OnInventarioClicked(object? s, EventArgs e)
         {
@@ -200,7 +212,7 @@ namespace Tiendara.CapaVisual.Componentes
 
             try
             {
-                var sesion = Get<Utils.SessionService>();
+                var sesion = Get<SessionService>();
                 sesion.Clear();
             }
             catch { /* no-op */ }

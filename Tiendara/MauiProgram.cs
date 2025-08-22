@@ -8,7 +8,8 @@ using Tiendara.CapaSql.InventarioRepo;
 using Tiendara.CapaSql.VentaRepo;
 using Tiendara.CapaSql.CajaRepo;
 using Tiendara.CapaVisual.PaginasModulo;
-using Tiendara.CapaVisual.Utils; // SessionService
+using Tiendara.CapaVisual.Utils;
+using Tiendara.CapaLogica.Servicios.Tiendara.CapaLogica.Servicios; // SessionService
 
 namespace Tiendara;
 
@@ -51,7 +52,7 @@ public static class MauiProgram
 
 
         // Estado de sesión para toda la app
-        builder.Services.AddSingleton<CapaVisual.Utils.SessionService>();
+        builder.Services.AddSingleton<SessionService>();
 
         var app = builder.Build();
         return app;

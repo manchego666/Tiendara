@@ -12,6 +12,7 @@ using Tiendara.CapaSql.SeguimientoRepo;
 using Tiendara.CapaSql.UsuarioRepo;
 using Tiendara.CapaLogica.Servicios;
 using Tiendara.CapaVisual.PaginasModulo;
+using Tiendara.CapaLogica.Servicios.Tiendara.CapaLogica.Servicios;
 
 namespace Tiendara.CapaSql.Startup
 {

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
 using Tiendara.CapaContratos;        // IAuthService
+using Tiendara.CapaLogica.Servicios.Tiendara.CapaLogica.Servicios;
 using Tiendara.CapaVisual.Utils;     // ServiceResolver, SessionService
 
 namespace Tiendara.CapaVisual.Componentes.Login;
@@ -9,8 +10,8 @@ namespace Tiendara.CapaVisual.Componentes.Login;
 public partial class MonedaLoginView : ContentView
 {
     // DI
-    private readonly IAuthService _auth = ServiceResolver.Get<IAuthService>();
-    private readonly SessionService _session = ServiceResolver.Get<SessionService>();
+    private IAuthService? _auth;
+    private SessionService? _session;
 
     const uint FlipDurationMs = 2000;
     const int FlipTurns = 6;
@@ -19,7 +20,6 @@ public partial class MonedaLoginView : ContentView
     public MonedaLoginView()
     {
         InitializeComponent();
-
         Coin.SizeChanged += (_, __) =>
         {
             var cx = Coin.Width / 2;
@@ -33,6 +33,12 @@ public partial class MonedaLoginView : ContentView
         };
 
         StartIdleShimmer();
+    }
+
+    public void InitServices(IAuthService auth, SessionService session)
+    {
+        _auth = auth;
+        _session = session;
     }
 
     private void OnToggleLoginPass(object? s, EventArgs e) => tbLoginPass.IsPassword = !tbLoginPass.IsPassword;

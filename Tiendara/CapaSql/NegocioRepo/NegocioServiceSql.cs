@@ -17,6 +17,35 @@ namespace Tiendara.CapaSql.NegocioRepo
     {
         private readonly string _cs = ConfiguracionSql.ConnectionString;
 
+        public async Task EliminarAsync(Guid id)
+        {
+            const string sql = @"UPDATE dbo.Negocio SET Activo=0, ModificadoEn=SYSUTCDATETIME() WHERE Id=@Id;";
+            using var cn = new SqlConnection(_cs);
+            await cn.OpenAsync();
+            using var cmd = new SqlCommand(sql, cn);
+            cmd.Parameters.AddWithValue("@Id", id);
+            await cmd.ExecuteNonQueryAsync();
+        }
+
+        public async Task<List<Negocio>> ObtenerTodosAsync()
+        {
+            const string sql = @"SELECT * FROM dbo.Negocio WHERE Activo=1 ORDER BY CreadoEn DESC;";
+            using var cn = new SqlConnection(_cs);
+            await cn.OpenAsync();
+            using var cmd = new SqlCommand(sql, cn);
+            using var rd = await cmd.ExecuteReaderAsync();
+
+            var list = new List<Negocio>();
+            while (await rd.ReadAsync()) list.Add(Map(rd));
+            return list;
+        }
+
+        // Opcionalmente InsertarAsync / ActualizarAsync si quieres usar los nombres de ICrudSql
+        public async Task InsertarAsync(Negocio n) => await AddAsync(n);
+        public async Task ActualizarAsync(Negocio n) => await UpdateAsync(n);
+        public async Task<Negocio?> ObtenerPorIdAsync(Guid id) => await GetByIdAsync(id);
+
+
         public async Task AddAsync(Negocio n)
         {
             if (n.Id == Guid.Empty) n.Id = Guid.NewGuid();

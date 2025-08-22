@@ -8,6 +8,7 @@ using Tiendara.CapaLogica.Servicios;
 using Tiendara.CapaVisual.Componentes.Portada;
 using Tiendara.CapaVisual.Componentes.Publicaciones;
 using Tiendara.CapaContratos;
+using Tiendara.CapaLogica.Servicios.Tiendara.CapaLogica.Servicios;
 
 namespace Tiendara.CapaVisual.PaginasModulo;
 
@@ -55,7 +56,7 @@ public partial class PerfilPage : ContentPage
 
     private async Task SincronizarConSesionAsync()
     {
-        var u = _sessionService.UsuarioLogeado;
+        var u = _sessionService.UsuarioActual;
         if (u == null)
         {
             await DisplayAlert("Sesión", "No hay sesión activa. Inicia sesión de nuevo.", "OK");
@@ -136,7 +137,7 @@ public partial class PerfilPage : ContentPage
             };
             if (fr == null) return;
 
-            var u = _sessionService.UsuarioLogeado;
+            var u = _sessionService.UsuarioActual;
             if (u == null)
             {
                 await DisplayAlert("Sesión", "Sin sesión activa.", "OK");

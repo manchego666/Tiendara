@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Tiendara.CapaDatos.Entidades;
+using Tiendara.CapaSql.Base;
 
 namespace Tiendara.CapaContratos
 {
@@ -44,6 +45,14 @@ namespace Tiendara.CapaContratos
         Task InsertarAsync(T entidad);
         Task ActualizarAsync(T entidad);
         Task EliminarAsync(Guid id);
+
+        // Sobrecarga conveniente
+        /// <summary>
+        /// Sobrecarga de EliminarAsync que recibe la entidad completa.
+        /// Internamente utiliza la propiedad Id de la entidad para eliminarla.
+        /// Esto permite pasar la entidad directamente sin extraer el Id manualmente.
+        /// </summary>
+        Task EliminarAsync(T entidad) => EliminarAsync(entidad.Id); // ahora puedo pasar la entidad completa ZDEV
     }
 
     // === INVENTARIO ===
@@ -102,7 +111,7 @@ namespace Tiendara.CapaContratos
         Task<List<Usuario>> GetAllAsync();
     }
 
-    public interface INegocioRepo 
+    public interface INegocioRepo : ICrudSql<Negocio>
     {
         Task AddAsync(Negocio n);
         Task UpdateAsync(Negocio n);

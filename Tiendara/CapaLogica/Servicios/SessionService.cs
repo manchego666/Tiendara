@@ -9,15 +9,16 @@ using Tiendara.CapaDatos.Entidades;
 
 namespace Tiendara.CapaLogica.Servicios
 {
-    public class SessionService
+    namespace Tiendara.CapaLogica.Servicios
     {
-        // Usuario logeado en memoria
-        public Usuario? UsuarioLogeado { get; private set; }
+        public class SessionService
+        {
+            public Usuario? UsuarioActual { get; private set; }
+            public bool Autenticado => UsuarioActual is not null;
+            public Guid UsuarioId => UsuarioActual?.Id ?? Guid.Empty;
 
-        // Guardar sesión
-        public void SetUsuario(Usuario u) => UsuarioLogeado = u;
-
-        // Cerrar sesión
-        public void Logout() => UsuarioLogeado = null;
+            public void Set(Usuario u) => UsuarioActual = u;
+            public void Clear() => UsuarioActual = null;
+        }
     }
 }

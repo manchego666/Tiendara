@@ -33,6 +33,7 @@
         </Style>
 
         <Style TargetType="Label">
+            <Setter Property="FontAttributes" Value="Bold"/>
             <Setter Property="TextColor" Value="#111"/>
             <Setter Property="FontSize" Value="14"/>
         </Style>
@@ -77,11 +78,11 @@
             <!-- FRONT = LOGIN -->
             <VerticalStackLayout x:Name="FrontPanel" Padding="24" Spacing="8"
                                  VerticalOptions="Center" HorizontalOptions="Center" IsVisible="True">
-                <Label Text="Iniciar sesión" FontAttributes="Bold" FontSize="20"
+                <Label Text="Iniciar sesión"  FontSize="20"
                        HorizontalTextAlignment="Center" Margin="0,0,0,4"/>
 
                 <Grid ColumnDefinitions="Auto,*">
-                    <Label Text="Email:" VerticalTextAlignment="Center" Margin="0,0,8,0"/>
+                    <Label Text="Email:" VerticalTextAlignment="Center"  Margin="0,0,8,0"/>
                     <Entry x:Name="tbLoginEmail" Grid.Column="1" Placeholder="correo@ejemplo.com" Keyboard="Email"/>
                 </Grid>
 

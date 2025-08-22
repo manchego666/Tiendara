@@ -5,17 +5,23 @@ using Tiendara.CapaLogica.Servicios;
 using Tiendara.CapaContratos;
 using Tiendara.CapaVisual.Utils;
 using Tiendara.CapaVisual.Componentes.Publicaciones;
+using Tiendara.CapaVisual.Autenticacion;
+using Tiendara.CapaLogica.Servicios.Tiendara.CapaLogica.Servicios;
 
 namespace Tiendara.CapaVisual.PaginasModulo
 {
     public partial class PerfilNegocioPage : ContentPage
     {
         private readonly INegocioRepo _negocios;
-        private readonly Utils.SessionService _session;
-        private readonly Guid _negocioId;
+        private readonly SessionService _session;
 
-        public PerfilNegocioPage(Guid negocioId/* Guid negocioId si quieres */)
+        private Guid _negocioId;
+
+        public PerfilNegocioPage(INegocioRepo negocios, SessionService session)
         {
+            _negocios = negocios;
+            _session = session;
+
             InitializeComponent();
 
             // Botón menú
@@ -34,8 +40,34 @@ namespace Tiendara.CapaVisual.PaginasModulo
         protected override async void OnAppearing()
         {
             base.OnAppearing();
+            await InicializarAsync();  // asegura que hay sesión y asigna _negocioId
+        }
+
+
+        private async Task InicializarAsync()
+        {
+            var usuario = _session.UsuarioActual;
+
+            if (usuario == null)
+            {
+                await DisplayAlert("Sesión", "No hay sesión activa.", "OK");
+                await Navigation.PopAsync();
+                return;
+            }
+
+            // Traer negocio del usuario
+            var lista = await _negocios.ListByUsuarioAsync(usuario.Id);
+            if (lista.Count == 0)
+            {
+                await Navigation.PushAsync(new RegistroTiendaPage());
+                return;
+            }
+
+            _negocioId = lista[0].Id; // <-- aquí ya sí asignas
+
             await CargarDatosAsync();
         }
+
 
         private async Task CargarDatosAsync()
         {

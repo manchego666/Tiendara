@@ -18,6 +18,7 @@
 
         <!-- Moneda encima, centrada -->
         <comp:MonedaLoginView
+            x:Name="monedaView"
            AbsoluteLayout.LayoutBounds="0.5,0.5,-1,-1"
            AbsoluteLayout.LayoutFlags="PositionProportional" />
 

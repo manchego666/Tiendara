@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Tiendara.CapaSql.Startup;
 using Tiendara.CapaLogica.Servicios;
 using Tiendara.CapaContratos;
+using Tiendara.CapaLogica.Servicios.Tiendara.CapaLogica.Servicios;
 
 namespace Tiendara.CapaVisual.PaginasModulo
 {
