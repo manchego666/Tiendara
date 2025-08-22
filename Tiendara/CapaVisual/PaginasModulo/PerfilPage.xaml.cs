@@ -8,22 +8,50 @@ using Tiendara.CapaLogica.Servicios;
 using Tiendara.CapaVisual.Componentes.Portada;
 using Tiendara.CapaVisual.Componentes.Publicaciones;
 using Tiendara.CapaContratos;
-using Tiendara.CapaLogica.Servicios.Tiendara.CapaLogica.Servicios;
+using Tiendara.CapaSql.Conexion;
+
 
 namespace Tiendara.CapaVisual.PaginasModulo;
 
 public partial class PerfilPage : ContentPage
 {
+    private readonly FotoService fotoService;
     private readonly INegocioRepo _negocios;
     private readonly IUsuarioRepo _usuarios;
     private readonly SessionService _sessionService;
 
     public PerfilPage(INegocioRepo negocios, IUsuarioRepo usuarios, SessionService sessionService)
     {
+        fotoService = new FotoService(ConfiguracionSql.UsuariosAvatares);
         _negocios = negocios;
         _usuarios = usuarios;
         _sessionService = sessionService;
         InitializeComponent();
+
+        // para tener la foto mas actualizada JEJE
+        portada.CambiarFotoSolicitado += async (s, e) =>
+        {
+            var result = await FilePicker.PickAsync(new PickOptions { FileTypes = FilePickerFileType.Images });
+            if (result != null)
+            {
+                var bytes = File.ReadAllBytes(result.FullPath);
+                var extension = Path.GetExtension(result.FileName ?? "default.png");
+                var nuevoNombre = fotoService.GuardarFotoUsuario(bytes, extension);
+
+                // FotoPath ahora recibe solo el nombre
+                portada.FotoPath = nuevoNombre;
+
+                // Guarda solo el nombre en BD
+                var u = _sessionService.UsuarioActual;
+                if (u != null)
+                {
+                    u.Foto = nuevoNombre;
+                    await _usuarios.UpdateAsync(u);
+                }
+            }
+        };
+
+
 
         nav.Activo = "none"; // desactiva todos
         nav.HomeClicked += async (_, __) => await Navigation.PopToRootAsync();
@@ -66,14 +94,19 @@ public partial class PerfilPage : ContentPage
         // Portada
         portada.Titulo = (u.Nombre ?? string.Empty).Trim();
         portada.Subtitulo = string.IsNullOrWhiteSpace(u.Email) ? "Usuario Tiendara+" : u.Email;
-        portada.FotoPath = (!string.IsNullOrWhiteSpace(u.Foto) && File.Exists(u.Foto)) ? u.Foto : null;
+
+        // Solo el nombre de archivo, PortadaPerfilView se encarga de la ruta
+        portada.FotoPath = !string.IsNullOrWhiteSpace(u.Foto) ? Path.GetFileName(u.Foto) : null;
 
         try
         {
             var tiendas = await _negocios.ListByUsuarioAsync(u.Id);
             portada.TiendasCount = tiendas?.Count ?? 0;
         }
-        catch { portada.TiendasCount = 0; }
+        catch
+        {
+            portada.TiendasCount = 0;
+        }
         portada.NoticiasCount = 0;
 
         // Feed (identidad)
@@ -83,6 +116,7 @@ public partial class PerfilPage : ContentPage
         pub.TiendaId = null;
         pub.TiendaNombre = null;
     }
+
 
     // ===== Acciones del feed =====
     private async void OnPubCommentRequested(object? sender, PublicacionItem item)

@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Tiendara.CapaSql.Conexion;
 
 namespace Tiendara.CapaVisual.Componentes.Portada
 {
@@ -81,6 +82,8 @@ namespace Tiendara.CapaVisual.Componentes.Portada
             ActualizarFoto(FotoPath);
         }
 
+
+
         private void ActualizarContadores()
         {
             if (Modo == PortadaModo.Tienda)
@@ -103,13 +106,24 @@ namespace Tiendara.CapaVisual.Componentes.Portada
             imgTema.Source = "portada_espacio.png";
         }
 
-        private void ActualizarFoto(string? path)
+        private void ActualizarFoto(string? fileName)
         {
-            if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
-                imgAvatar.Source = ImageSource.FromFile(path);
-            else
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
                 imgAvatar.Source = "avatar_default.png";
+                return;
+            }
+
+            string fullPath = Modo == PortadaModo.Usuario
+                ? Path.Combine(ConfiguracionSql.UsuariosAvatares, fileName)
+                : Path.Combine(ConfiguracionSql.NegociosLogos, fileName);
+
+            imgAvatar.Source = File.Exists(fullPath)
+                ? ImageSource.FromFile(fullPath)
+                : (Modo == PortadaModo.Usuario ? "avatar_default.png" : "logo_default.png");
         }
+
+
 
         // Mantener 16:9 a todo el ancho del hero
         private void OnHeroSizeChanged(object? sender, EventArgs e)

@@ -28,8 +28,9 @@ public class Negocio : IEntidadSql
     public double? Longitud { get; set; }
 
     public string? Telefono { get; set; }
-    public string? FotoLogoPath { get; set; }
+    public string? LogoPath { get; set; }  // ej. "C:/Tiendara/Media/Negocios/Logos/{id}.png"
     public string? Notas { get; set; }
+    public string? Descripcion { get; set;} 
 
     public bool Abierto { get; set; } = false;
     public bool Activo { get; set; } = true;

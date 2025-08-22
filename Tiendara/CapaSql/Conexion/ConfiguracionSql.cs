@@ -20,5 +20,12 @@ namespace Tiendara.CapaSql.Conexion
         // DEV: PARA INSTANCIA REAL
         public static string ConnectionString { get; set; } =
             "Server=localhost\\SQLEXPRESS;Database=TiendaraDB;User Id=TiendaraUser;Password=Tanshinie123;TrustServerCertificate=True;";
+          
+        
+        //La ruta para cargar el avatar o logo en los perfiles (solo se aceptara una foto por perfil ya sea negocio o usuario )
+        //--NO ES RED SOCIAL-- despues se empezara a trabajar en seguridad para no depender de nubes ni rentar un host para pasar por link prefiero local en mi server...
+        public static string MediaRootPath { get; } = @"C:\Tiendara\Media";
+        public static string UsuariosAvatares => Path.Combine(MediaRootPath, "Usuarios", "Avatares");
+        public static string NegociosLogos => Path.Combine(MediaRootPath, "Negocios", "Logos");
     }
 }

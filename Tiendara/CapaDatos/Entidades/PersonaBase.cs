@@ -19,6 +19,8 @@ namespace Tiendara.CapaDatos.Entidades
 
         public string Nombre { get; set; } = string.Empty;
         public string Apellidos { get; set; } = string.Empty;
+        public string Direccion { get; set; } = string.Empty;
+        public string Bio { get; set; } = string.Empty; // Biografia para el usuario en su perfil {Busco trabajo... Trabajo en tal parte... esta tendra mas libertad de expresión que otras funciones, que no se liberan hasta ser freemium XD(Probablemente)}
 
         public string? Rfc { get; set; }
 
@@ -31,8 +33,7 @@ namespace Tiendara.CapaDatos.Entidades
 
         public string? Telefono { get; set; }
 
-        public string? Avatar { get; set; }
-        public string? Foto { get; set; }
+        public string? AvatarPath { get; set; } // ej. "C:/Tiendara/Media/Usuarios/Avatares/{id}.jpg"
 
         public string? HuellaHashBase64 { get; set; }
 

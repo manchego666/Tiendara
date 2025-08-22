@@ -35,6 +35,12 @@
 	  <MauiXaml Update="CapaVisual\Componentes\Login\MonedaLoginView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="CapaVisual\Formularios\EditarNegocioPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="CapaVisual\Formularios\EditarPerfilPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="CapaVisual\PaginasModulo\ChatListPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
