@@ -7,10 +7,9 @@
 
 using Tiendara.CapaDatos.Entidades;
 
+
 namespace Tiendara.CapaLogica.Servicios
 {
-    namespace Tiendara.CapaLogica.Servicios
-    {
         public class SessionService
         {
             public Usuario? UsuarioActual { get; private set; }
@@ -20,5 +19,4 @@ namespace Tiendara.CapaLogica.Servicios
             public void Set(Usuario u) => UsuarioActual = u;
             public void Clear() => UsuarioActual = null;
         }
-    }
 }

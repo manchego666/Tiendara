@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Tiendara.CapaLogica.Infra;
 using Tiendara.CapaSql.Conexion;
 
 namespace Tiendara.CapaVisual.Componentes.Portada
@@ -106,21 +107,23 @@ namespace Tiendara.CapaVisual.Componentes.Portada
             imgTema.Source = "portada_espacio.png";
         }
 
-        private void ActualizarFoto(string? fileName)
+        public void ActualizarFoto(string? fileName)
         {
+            // 1) Si no hay valor, muestra un placeholder local
             if (string.IsNullOrWhiteSpace(fileName))
             {
-                imgAvatar.Source = "avatar_default.png";
+                // usa el que tengas en Resources: "avatar_default.png" o "logo_default.png"
+                imgAvatar.Source = ImageSource.FromFile("avatar_default.png");
                 return;
             }
 
-            string fullPath = Modo == PortadaModo.Usuario
-                ? Path.Combine(ConfiguracionSql.UsuariosAvatares, fileName)
-                : Path.Combine(ConfiguracionSql.NegociosLogos, fileName);
+            // 2) Construye URL absoluta (acepta url completa o ruta relativa de BD)
+            var url = BackendConfig.ToAbsoluteMediaUrl(fileName);
 
-            imgAvatar.Source = File.Exists(fullPath)
-                ? ImageSource.FromFile(fullPath)
-                : (Modo == PortadaModo.Usuario ? "avatar_default.png" : "logo_default.png");
+            // 3) Rompe caché para que se refresque al instante tras subir
+            url = $"{url}?v={DateTime.UtcNow.Ticks}";
+
+            imgAvatar.Source = ImageSource.FromUri(new Uri(url));
         }
 
 

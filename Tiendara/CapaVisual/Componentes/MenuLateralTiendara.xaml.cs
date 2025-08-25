@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Tiendara.CapaContratos;
 using Tiendara.CapaDatos.Entidades;
 using Tiendara.CapaLogica.Servicios; // SessionService
-using Tiendara.CapaLogica.Servicios.Tiendara.CapaLogica.Servicios;
 using Tiendara.CapaVisual.Autenticacion;
 using Tiendara.CapaVisual.PaginasModulo;
 
@@ -16,6 +15,11 @@ namespace Tiendara.CapaVisual.Componentes
     {
         bool _abierto;
         bool _tiendaAbierta;
+        private static Task Alert(string title, string message, string cancel = "OK")
+    => Application.Current.MainPage.DisplayAlert(title, message, cancel);
+
+        private static Task<bool> Confirm(string title, string message, string accept = "OK", string cancel = "Cancelar")
+            => Application.Current.MainPage.DisplayAlert(title, message, accept, cancel);
 
         public MenuLateralTiendara()
         {
@@ -104,7 +108,7 @@ namespace Tiendara.CapaVisual.Componentes
         // ===== Navegación / acciones =====
         private async void OnPerfilClicked(object? s, EventArgs e)
         {
-            var perfilPage = App.Services.GetRequiredService<PerfilPage>();
+            var perfilPage = Get<PerfilPage>();
             await Navigation.PushAsync(perfilPage);
             await CerrarAsync();
         }
@@ -113,51 +117,48 @@ namespace Tiendara.CapaVisual.Componentes
         {
             try
             {
-                // Obtener la sesión correctamente
-                var sesion = Get<SessionService>(); // <-- CapaLogica.Servicios.SessionService
+                var sesion = Get<SessionService>();
                 var usuario = sesion.UsuarioActual;
-
-                if (usuario == null)
+                if (usuario is null)
                 {
-                    await Application.Current.MainPage.DisplayAlert(
-                        "Perfil de negocio",
-                        "Inicia sesión primero.",
-                        "OK");
+                    await Alert("Perfil de negocio", "Inicia sesión primero.");
                     return;
                 }
 
-                // Traer negocios
                 var negociosSrv = Get<INegocioRepo>();
                 var tiendas = await negociosSrv.ListByUsuarioAsync(usuario.Id);
 
-                if (tiendas == null || tiendas.Count == 0)
+                if (tiendas is null || tiendas.Count == 0)
                 {
-                    var crear = await Application.Current.MainPage.DisplayAlert(
+                    var crear = await Confirm(
                         "Perfil de negocio",
                         "Primero registra tu negocio para entrar al perfil.",
                         "Registrar", "Cancelar");
 
                     if (crear)
-                        await Navigation.PushAsync(new RegistroTiendaPage());
-
+                    {
+                        var reg = Get<RegistroTiendaPage>();   // DI crea la página con deps
+                        await Navigation.PushAsync(reg);
+                    }
                     return;
                 }
 
-                // Abrir el perfil de la primera tienda
-                var tiendaId = tiendas.First().Id;
-                await Navigation.PushAsync(new PerfilNegocioPage(negociosSrv, sesion));
-
+                var page = Get<PerfilNegocioPage>();          // DI inyecta INegocioRepo, SessionService, IFotoApi
+                await Navigation.PushAsync(page);
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
+                await Alert("Error", ex.Message);
             }
             finally
             {
                 await CerrarAsync();
             }
         }
-    
+
+
+
+
 
 
 
@@ -166,14 +167,14 @@ namespace Tiendara.CapaVisual.Componentes
 
         private async void OnInventarioClicked(object? s, EventArgs e)
         {
-            var inventarioPage = App.Services.GetRequiredService<InventarioPage>();
+            var inventarioPage = Get<InventarioPage>();
             await Navigation.PushAsync(inventarioPage);
             await CerrarAsync();
         }
 
         private async void OnRetirosClicked(object? s, EventArgs e)
         {
-            var retirosPage = App.Services.GetRequiredService<RetirosPage>();
+            var retirosPage = Get<RetirosPage>();
             await Navigation.PushAsync(retirosPage);
             await CerrarAsync();
         }

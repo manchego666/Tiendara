@@ -1,8 +1,8 @@
 ﻿using Microsoft.Maui.Controls;
 using Tiendara.CapaContratos;
-using Tiendara.CapaLogica.Servicios.Tiendara.CapaLogica.Servicios;
 using Tiendara.CapaVisual.Componentes.Login;
 using Tiendara.CapaVisual.Utils;
+using Tiendara.CapaLogica.Servicios;
 
 namespace Tiendara.CapaVisual.Autenticacion;
 

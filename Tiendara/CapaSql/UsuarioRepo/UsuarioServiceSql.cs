@@ -48,17 +48,18 @@ namespace Tiendara.CapaSql.UsuarioRepo
         public override async Task InsertarAsync(Usuario e)
         {
             if (e.Id == Guid.Empty) e.Id = Guid.NewGuid();
+
             const string sql = @"
 INSERT INTO dbo.Usuario
-(Id, Nombre, Apellidos, Rfc, Email, Telefono, Avatar, Foto, HuellaHashBase64,
+(Id, Nombre, Apellidos, Rfc, Email, Telefono, AvatarPath, HuellaHashBase64,
  PasswordSaltBase64, PasswordHashBase64, PasswordIterations, Activo, CreadoEn)
 VALUES
-(@Id, @Nombre, @Apellidos, @Rfc, @Email, @Telefono, @Avatar, @Foto, @HuellaHashBase64,
+(@Id, @Nombre, @Apellidos, @Rfc, @Email, @Telefono, @AvatarPath, @HuellaHashBase64,
  @PasswordSaltBase64, @PasswordHashBase64, @PasswordIterations, @Activo, SYSUTCDATETIME());";
 
             using var cn = await OpenAsync();
             using var cmd = new SqlCommand(sql, cn);
-            AddCommonParams(cmd, e, includeId: true, forUpdate: false);
+            AddCommonParams(cmd, e, includeId: true);
             await cmd.ExecuteNonQueryAsync();
         }
 
@@ -71,8 +72,7 @@ UPDATE dbo.Usuario SET
   Rfc=@Rfc,
   Email=@Email,
   Telefono=@Telefono,
-  Avatar=@Avatar,
-  Foto=@Foto,
+  AvatarPath=@AvatarPath,
   HuellaHashBase64=@HuellaHashBase64,
   PasswordSaltBase64=@PasswordSaltBase64,
   PasswordHashBase64=@PasswordHashBase64,
@@ -83,13 +83,13 @@ WHERE Id=@Id;";
 
             using var cn = await OpenAsync();
             using var cmd = new SqlCommand(sql, cn);
-            AddCommonParams(cmd, e, includeId: true, forUpdate: true);
+            AddCommonParams(cmd, e, includeId: true);
             await cmd.ExecuteNonQueryAsync();
         }
 
         public override async Task EliminarAsync(Guid id)
         {
-            // Borrado "duro" o lógico. Aquí haré lógico (Activo=0)
+            // Borrado lógico
             const string sql = @"UPDATE dbo.Usuario SET Activo=0, ModificadoEn=SYSUTCDATETIME() WHERE Id=@Id;";
             using var cn = await OpenAsync();
             using var cmd = new SqlCommand(sql, cn);
@@ -110,11 +110,8 @@ WHERE Id=@Id;";
         }
 
         public async Task<Usuario?> GetByIdAsync(Guid id) => await ObtenerPorIdAsync(id);
-
         public async Task AddAsync(Usuario u) => await InsertarAsync(u);
-
         public async Task UpdateAsync(Usuario u) => await ActualizarAsync(u);
-
         public async Task<List<Usuario>> GetAllAsync() => await ObtenerTodosAsync();
 
         // ===== Helpers =====
@@ -127,8 +124,7 @@ WHERE Id=@Id;";
             Rfc = Get<string>(r, nameof(Usuario.Rfc)),
             Email = Get<string>(r, nameof(Usuario.Email)) ?? string.Empty,
             Telefono = Get<string>(r, nameof(Usuario.Telefono)),
-            Avatar = Get<string>(r, nameof(Usuario.Avatar)),
-            Foto = Get<string>(r, nameof(Usuario.Foto)),
+            AvatarPath = Get<string>(r, nameof(Usuario.AvatarPath)),
             HuellaHashBase64 = Get<string>(r, nameof(Usuario.HuellaHashBase64)),
             PasswordSaltBase64 = Get<string>(r, nameof(Usuario.PasswordSaltBase64)),
             PasswordHashBase64 = Get<string>(r, nameof(Usuario.PasswordHashBase64)),
@@ -138,17 +134,16 @@ WHERE Id=@Id;";
             ModificadoEn = Get<DateTime?>(r, nameof(Usuario.ModificadoEn))
         };
 
-        private static void AddCommonParams(SqlCommand cmd, Usuario e, bool includeId, bool forUpdate)
+        private static void AddCommonParams(SqlCommand cmd, Usuario e, bool includeId)
         {
             if (includeId) cmd.Parameters.AddWithValue("@Id", e.Id);
 
-            cmd.Parameters.AddWithValue("@Nombre", e.Nombre);
-            cmd.Parameters.AddWithValue("@Apellidos", e.Apellidos);
+            cmd.Parameters.AddWithValue("@Nombre", e.Nombre ?? string.Empty);
+            cmd.Parameters.AddWithValue("@Apellidos", e.Apellidos ?? string.Empty);
             cmd.Parameters.AddWithValue("@Rfc", (object?)e.Rfc ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@Email", e.Email);
+            cmd.Parameters.AddWithValue("@Email", e.Email ?? string.Empty);
             cmd.Parameters.AddWithValue("@Telefono", (object?)e.Telefono ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@Avatar", (object?)e.Avatar ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@Foto", (object?)e.Foto ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@AvatarPath", (object?)e.AvatarPath ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@HuellaHashBase64", (object?)e.HuellaHashBase64 ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@PasswordSaltBase64", (object?)e.PasswordSaltBase64 ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@PasswordHashBase64", (object?)e.PasswordHashBase64 ?? DBNull.Value);

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
 using Tiendara.CapaContratos;        // IAuthService
-using Tiendara.CapaLogica.Servicios.Tiendara.CapaLogica.Servicios;
+using Tiendara.CapaLogica.Servicios;
 using Tiendara.CapaVisual.Utils;     // ServiceResolver, SessionService
 
 namespace Tiendara.CapaVisual.Componentes.Login;

@@ -175,8 +175,44 @@ namespace Tiendara.CapaContratos
         Task<IReadOnlyList<Guid>> ListSiguiendoAsync(Guid usuarioId);
     }
 
+    //========================================================================================= interfaces para fotos....
+    public interface IFotoRepo
+    {
+        Task<string?> GetPerfilPathAsync(Guid usuarioId);
+        Task SetPerfilPathAsync(Guid usuarioId, string relativePath);
+        Task<string?> GetNegocioPathAsync(Guid negocioId);
+        Task SetNegocioPathAsync(Guid negocioId, string relativePath);
+    }
+
+    public enum MediaArea { UsuarioAvatar, NegocioLogo }
+
+    public interface IFotoStorage // SOLO en backend
+    {
+        Task<string> SaveAsync(MediaArea area, Guid id, Stream file, string ext);
+        Task DeleteIfExistsAsync(string relativePath);
+        bool Exists(string relativePath);
+        string GetPublicUrl(string relativePath); // http://host:port/media/...
+    }
+
+
+    public interface IFotoService
+    {
+        Task<string> GuardarFotoPerfilAsync(Guid usuarioId, Stream fotoStream, string ext);
+        Task<string> GuardarFotoNegocioAsync(Guid negocioId, Stream fotoStream, string ext);
+        Task<string?> ObtenerFotoPerfilAsync(Guid usuarioId);
+        Task<string?> ObtenerFotoNegocioAsync(Guid negocioId);
+    }
+
+    public interface IFotoApi
+    {
+        Task<string> SubirAvatarAsync(Guid usuarioId, Stream stream, string fileName);
+        Task<string> SubirLogoAsync(Guid negocioId, Stream stream, string fileName);
+    }
+
+    //============================================================================================= ZDEV
+
     //Pagos despues con tarjetas
-        public record PaymentResult(bool Ok, string? AuthorizationCode, string? Error);
+    public record PaymentResult(bool Ok, string? AuthorizationCode, string? Error);
 
         public interface IPaymentGateway
         {

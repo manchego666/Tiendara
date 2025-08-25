@@ -2,20 +2,21 @@
 using System;
 using Tiendara.CapaDatos.Entidades;
 using Tiendara.CapaContratos;        // INegocioRepo
-using Tiendara.CapaLogica.Servicios; // ← SessionService de CapaLógica
+using Tiendara.CapaLogica.Servicios; // SessionService
 using Tiendara.CapaVisual.Utils;
-using Tiendara.CapaLogica.Servicios.Tiendara.CapaLogica.Servicios;     // ServiceResolver solo si quieres usar DI
 
 namespace Tiendara.CapaVisual.Autenticacion
 {
     public partial class RegistroTiendaPage : ContentPage
     {
-        private readonly INegocioRepo _repo = ServiceResolver.Get<INegocioRepo>();
-        private readonly SessionService _session = ServiceResolver.Get<SessionService>(); // ahora es de CapaLógica
+        private readonly INegocioRepo _repo;
+        private readonly SessionService _session;
 
-        public RegistroTiendaPage()
+        public RegistroTiendaPage(INegocioRepo repo, SessionService session)
         {
             InitializeComponent();
+            _repo = repo;
+            _session = session;
         }
 
         private async void OnGuardarClicked(object sender, EventArgs e)
@@ -35,7 +36,7 @@ namespace Tiendara.CapaVisual.Autenticacion
 
             var n = new Negocio
             {
-                PropietarioUsuarioId = _session.UsuarioId,  // toma el ID del usuario logeado
+                PropietarioUsuarioId = _session.UsuarioId, // o _session.UsuarioActual!.Id si usas ese modelo
                 Nombre = nombre,
                 Giro = (txtGiro.Text ?? "").Trim(),
                 Telefono = (txtTelefono.Text ?? "").Trim(),

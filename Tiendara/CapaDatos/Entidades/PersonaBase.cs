@@ -57,10 +57,16 @@ namespace Tiendara.CapaDatos.Entidades
         public void ActualizarIdentificadores(string? rfc = null, string? avatar = null, string? foto = null)
         {
             Rfc = rfc?.Trim();
-            Avatar = avatar?.Trim();
-            Foto = foto?.Trim();
+
+            // Back-compat: si viene 'avatar' úsalo; si no, cae a 'foto' (código viejo).
+            var nuevo = string.IsNullOrWhiteSpace(avatar) ? foto : avatar;
+
+            if (!string.IsNullOrWhiteSpace(nuevo))
+                AvatarPath = nuevo.Trim();
+
             ModificadoEn = DateTime.UtcNow;
         }
+
 
         public void DefinirHuellaHash(string? huellaHashBase64)
         {

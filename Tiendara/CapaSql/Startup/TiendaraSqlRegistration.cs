@@ -12,7 +12,6 @@ using Tiendara.CapaSql.SeguimientoRepo;
 using Tiendara.CapaSql.UsuarioRepo;
 using Tiendara.CapaLogica.Servicios;
 using Tiendara.CapaVisual.PaginasModulo;
-using Tiendara.CapaLogica.Servicios.Tiendara.CapaLogica.Servicios;
 
 namespace Tiendara.CapaSql.Startup
 {
@@ -34,8 +33,6 @@ namespace Tiendara.CapaSql.Startup
             services.AddSingleton<IChatRepo, ChatServiceSql>();
             services.AddSingleton<INegocioRepo, NegocioServiceSql>();
             services.AddSingleton<ISeguimientoRepo, SeguimientoServiceSql>();
-            services.AddSingleton<SessionService>();
-            services.AddTransient<PerfilPage>();
 
 
             if (!string.IsNullOrWhiteSpace(mediaRoot))

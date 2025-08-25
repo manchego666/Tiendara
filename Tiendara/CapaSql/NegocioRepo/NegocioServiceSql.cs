@@ -52,11 +52,11 @@ namespace Tiendara.CapaSql.NegocioRepo
             const string sql = @"
 INSERT INTO dbo.Negocio
 (Id, PropietarioUsuarioId, Nombre, Giro, EstadoMarca, NombreMarca,
- Direccion, Latitud, Longitud, Telefono, FotoLogoPath, Notas,
+ Direccion, Latitud, Longitud, Telefono, LogoPath, Notas,
  Abierto, Activo, CreadoEn)
 VALUES
 (@Id,@PropietarioUsuarioId,@Nombre,@Giro,@EstadoMarca,@NombreMarca,
- @Direccion,@Latitud,@Longitud,@Telefono,@FotoLogoPath,@Notas,
+ @Direccion,@Latitud,@Longitud,@Telefono,@LogoPath,@Notas,
  @Abierto,1,SYSUTCDATETIME());";
 
             using var cn = new SqlConnection(_cs);
@@ -79,7 +79,7 @@ UPDATE dbo.Negocio SET
  Latitud=@Latitud,
  Longitud=@Longitud,
  Telefono=@Telefono,
- FotoLogoPath=@FotoLogoPath,
+ LogoPath=@LogoPath,
  Notas=@Notas,
  Abierto=@Abierto,
  ModificadoEn=SYSUTCDATETIME()
@@ -130,7 +130,7 @@ WHERE Id=@Id AND Activo=1;";
             cmd.Parameters.AddWithValue("@Latitud", (object?)n.Latitud ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@Longitud", (object?)n.Longitud ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@Telefono", (object?)n.Telefono ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@FotoLogoPath", (object?)n.FotoLogoPath ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@LogoPath", (object?)n.LogoPath ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@Notas", (object?)n.Notas ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@Abierto", n.Abierto);
         }
@@ -147,7 +147,7 @@ WHERE Id=@Id AND Activo=1;";
             Latitud = r["Latitud"] as double?,
             Longitud = r["Longitud"] as double?,
             Telefono = r["Telefono"] as string,
-            FotoLogoPath = r["FotoLogoPath"] as string,
+            LogoPath = r["LogoPath"] as string,
             Notas = r["Notas"] as string,
             Abierto = (bool)r["Abierto"],
             Activo = (bool)r["Activo"],

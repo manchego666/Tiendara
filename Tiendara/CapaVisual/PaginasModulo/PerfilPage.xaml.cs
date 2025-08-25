@@ -1,5 +1,6 @@
 ﻿using Microsoft.Maui.Controls;
 using Microsoft.Maui.Media;
+using Microsoft.Maui.Storage;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -11,70 +12,39 @@ using Tiendara.CapaContratos;
 using Tiendara.CapaSql.Conexion;
 
 
+
 namespace Tiendara.CapaVisual.PaginasModulo;
 
 public partial class PerfilPage : ContentPage
 {
-    private readonly FotoService fotoService;
     private readonly INegocioRepo _negocios;
     private readonly IUsuarioRepo _usuarios;
     private readonly SessionService _sessionService;
+    private readonly IFotoApi _fotos;
 
-    public PerfilPage(INegocioRepo negocios, IUsuarioRepo usuarios, SessionService sessionService)
+    public PerfilPage(INegocioRepo negocios, IUsuarioRepo usuarios, SessionService sessionService, IFotoApi fotos)
     {
-        fotoService = new FotoService(ConfiguracionSql.UsuariosAvatares);
+        InitializeComponent();
         _negocios = negocios;
         _usuarios = usuarios;
         _sessionService = sessionService;
-        InitializeComponent();
+        _fotos = fotos;
 
-        // para tener la foto mas actualizada JEJE
-        portada.CambiarFotoSolicitado += async (s, e) =>
-        {
-            var result = await FilePicker.PickAsync(new PickOptions { FileTypes = FilePickerFileType.Images });
-            if (result != null)
-            {
-                var bytes = File.ReadAllBytes(result.FullPath);
-                var extension = Path.GetExtension(result.FileName ?? "default.png");
-                var nuevoNombre = fotoService.GuardarFotoUsuario(bytes, extension);
-
-                // FotoPath ahora recibe solo el nombre
-                portada.FotoPath = nuevoNombre;
-
-                // Guarda solo el nombre en BD
-                var u = _sessionService.UsuarioActual;
-                if (u != null)
-                {
-                    u.Foto = nuevoNombre;
-                    await _usuarios.UpdateAsync(u);
-                }
-            }
-        };
-
-
-
-        nav.Activo = "none"; // desactiva todos
+        nav.Activo = "none";
         nav.HomeClicked += async (_, __) => await Navigation.PopToRootAsync();
         nav.WorldClicked += async (_, __) => await Navigation.PushAsync(new MapPage());
 
-
-        // Menú lateral
         btnMenu.Clicked += async (_, __) => await menuLateral.ToggleMenu();
 
-        // Portada (eventos)
+        portada.Modo = PortadaModo.Usuario;
         portada.VerFotoSolicitado += async (_, __) => await VerFotoAsync();
         portada.CambiarFotoSolicitado += async (_, __) => await CambiarFotoAsync();
-        portada.EditarDatosClicked += async (_, __) =>
-            await DisplayAlert("ZDEV - 2025", "Editar datos (en desarrollo).", "OK");
-        portada.EditarTemasClicked += async (_, __) =>
-            await DisplayAlert("ZDEV - 2025", "Editar temas (en desarrollo).", "OK");
 
-        // Feed (eventos)
         pub.CommentRequested += OnPubCommentRequested;
         pub.ContactRequested += OnPubContactRequested;
         pub.ProfileRequested += OnPubProfileRequested;
-        
     }
+
 
     protected override async void OnAppearing()
     {
@@ -96,7 +66,7 @@ public partial class PerfilPage : ContentPage
         portada.Subtitulo = string.IsNullOrWhiteSpace(u.Email) ? "Usuario Tiendara+" : u.Email;
 
         // Solo el nombre de archivo, PortadaPerfilView se encarga de la ruta
-        portada.FotoPath = !string.IsNullOrWhiteSpace(u.Foto) ? Path.GetFileName(u.Foto) : null;
+        portada.FotoPath = u.AvatarPath;   // puede venir null o relativo
 
         try
         {
@@ -131,71 +101,36 @@ public partial class PerfilPage : ContentPage
     // ===== Foto de perfil =====
     private async Task VerFotoAsync()
     {
-        var src = (!string.IsNullOrWhiteSpace(portada.FotoPath) && File.Exists(portada.FotoPath))
-            ? ImageSource.FromFile(portada.FotoPath)
-            : ImageSource.FromFile("avatar_default.png");
+        var abs = Tiendara.CapaLogica.Infra.BackendConfig.ToAbsoluteMediaUrl(portada.FotoPath);
+        if (string.IsNullOrWhiteSpace(abs))
+        { await DisplayAlert("Foto", "Sin foto.", "OK"); return; }
 
-        var img = new Image { Aspect = Aspect.AspectFit, Source = src, BackgroundColor = Colors.Black };
-        var viewer = new ContentPage
-        {
-            Title = "Foto de perfil",
-            BackgroundColor = Colors.Black,
-            Content = new Grid { Children = { img } }
-        };
+        var img = new Image { Aspect = Aspect.AspectFit, Source = ImageSource.FromUri(new Uri(abs)), BackgroundColor = Colors.Black };
+        var viewer = new ContentPage { Title = "Foto de perfil", BackgroundColor = Colors.Black, Content = new Grid { Children = { img } } };
         viewer.ToolbarItems.Add(new ToolbarItem("Cerrar", null, async () => await Navigation.PopModalAsync()));
         img.GestureRecognizers.Add(new TapGestureRecognizer { Command = new Command(async () => await Navigation.PopModalAsync()) });
-
-        await Navigation.PushModalAsync(new NavigationPage(viewer)
-        {
-            BarTextColor = Colors.White,
-            BarBackgroundColor = Colors.Black
-        });
+        await Navigation.PushModalAsync(new NavigationPage(viewer) { BarTextColor = Colors.White, BarBackgroundColor = Colors.Black });
     }
+
 
     private async Task CambiarFotoAsync()
     {
         if (!await Tiendara.CapaVisual.Utils.Permisos.EnsureFotoAsync())
-        {
-            await DisplayAlert("Permisos", "Necesito acceso a cámara y fotos.", "OK");
-            return;
-        }
+        { await DisplayAlert("Permisos", "Necesito acceso a fotos.", "OK"); return; }
 
-        var action = await DisplayActionSheet("Foto de perfil", "Cancelar", null, "Desde cámara", "Desde galería");
-        try
-        {
-            FileResult? fr = action switch
-            {
-                "Desde cámara" => await MediaPicker.CapturePhotoAsync(),
-                "Desde galería" => await MediaPicker.PickPhotoAsync(),
-                _ => null
-            };
-            if (fr == null) return;
+        var pick = await FilePicker.PickAsync(new PickOptions { PickerTitle = "Elige imagen", FileTypes = FilePickerFileType.Images });
+        if (pick is null) return;
 
-            var u = _sessionService.UsuarioActual;
-            if (u == null)
-            {
-                await DisplayAlert("Sesión", "Sin sesión activa.", "OK");
-                return;
-            }
+        var u = _sessionService.UsuarioActual;
+        if (u is null) { await DisplayAlert("Sesión", "Sin sesión activa.", "OK"); return; }
 
-            var dir = FileSystem.AppDataDirectory;
-            var filename = $"avatar_{u.Id}.jpg";
-            var dest = Path.Combine(dir, filename);
+        await using var s = await pick.OpenReadAsync();
+        var url = await _fotos.SubirAvatarAsync(u.Id, s, pick.FileName);
 
-            using (var src = await fr.OpenReadAsync())
-            using (var dst = File.Create(dest))
-                await src.CopyToAsync(dst);
+        // Refresca al instante (la vista arma la URL y cache-buster)
+        portada.FotoPath = url;
 
-            portada.FotoPath = dest;
-
-            u.Foto = dest;
-            await _usuarios.UpdateAsync(u);
-
-            await DisplayAlert("Perfil", "Foto actualizada.", "OK");
-        }
-        catch (Exception ex)
-        {
-            await DisplayAlert("Error", ex.Message, "OK");
-        }
+        await DisplayAlert("Perfil", "Foto actualizada.", "OK");
     }
+
 }
